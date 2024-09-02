@@ -1,0 +1,32 @@
+/* src/components/SearchBar.css */
+.searchbar-box {
+    align-items: center;
+    background-color: #5c6bc0;
+    display: flex;
+    height: 90px;
+    justify-content: center;
+    position: absolute;
+    width: 100%;
+    z-index: 10;
+    
+  }
+  
+  .searchbar-input {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: inset 1px 1px rgba(0, 0, 0, .075);
+    color: #555;
+    font-size: 14px;
+    height: 34px;
+    padding: 6px 12px;
+    width: 45%;
+    box-sizing: border-box;
+    margin-right: 0px; /* Espacio entre input y botón */
+  }
+  
+  .searchbar-box-btn {
+    height: 36px;
+    margin-left: 10px;
+  }
+  

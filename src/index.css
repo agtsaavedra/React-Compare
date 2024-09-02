@@ -1,3 +1,4 @@
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,9 +6,48 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+
+  
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.cell-different-red {
+  background-color: #f85252; /* Rojo claro para las diferencias en la primera tabla */
+}
+
+.cell-different-green {
+  background-color: #91ef91; /* Verde claro para las diferencias en la segunda tabla */
+}
+
+.header-cell {
+  background-color: #5c6bc0; 
+  color: white;/* Color específico para los encabezados */
+}
+
+.MuiDataGrid-columnHeaderTitleContainer {
+  background-color: #5c6bc0; /* Cambiar color del checkbox seleccionado a #5c6bc0 */
+}
+
+.scrollbar-container {
+  background-color: #5c6bc0;
+  overflow-x: auto;
+}
+
+.scrollbar-container::-webkit-scrollbar {
+  height: 10px; /* Altura de la barra de scroll */
+}
+
+.scrollbar-container::-webkit-scrollbar-track {
+  background: #5c6bc0; /* Fondo de la barra de scroll */
+}
+
+.scrollbar-container::-webkit-scrollbar-thumb {
+  background-color: #ffffff; /* Color del thumb de la barra */
+  border-radius: 4px; /* Bordes redondeados del thumb */
+  border: 2px solid #5c6bc0; /* Borde del thumb */
 }
