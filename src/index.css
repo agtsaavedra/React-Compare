@@ -8,6 +8,12 @@ body {
   overflow-x: hidden; /* Esconder cualquier scroll horizontal en el cuerpo */
 }
 
+body,
+  html,
+  #root {
+    height: 100%;
+  }
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -79,4 +85,12 @@ code {
 
 .scrollbar-container {
   overflow-x: auto !important;  /* Asegura que la barra de desplazamiento horizontal esté visible */
+}
+
+.MuiDataGrid-scrollbar {
+  overflow-x: hidden!important;
+}
+
+.MuiDataGrid-main{
+  overflow-x: hidden!important;
 }

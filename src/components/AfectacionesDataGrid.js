@@ -11,9 +11,10 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText }) => {
 
   useLayoutEffect(() => {
     if (grid1Ref.current && grid2Ref.current) {
-      const grid1Width = grid1Ref.current.querySelector('.MuiDataGrid-root')?.scrollWidth || 0;
-      const grid2Width = grid2Ref.current.querySelector('.MuiDataGrid-root')?.scrollWidth || 0;
+      const grid1Width = grid1Ref.current.querySelector('.MuiDataGrid-scrollbar--horizontal')?.scrollWidth;
+      const grid2Width = grid2Ref.current.querySelector('.MuiDataGrid-scrollbar--horizontal')?.scrollWidth;
       setTotalColumnsWidth(Math.max(grid1Width, grid2Width));
+      console.log(totalColumnsWidth)
     }
   }, [afectaciones1, afectaciones2]);
 
@@ -60,8 +61,8 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText }) => {
 
   const syncScroll = (scrollLeft) => {
     if (grid1Ref.current && grid2Ref.current) {
-      grid1Ref.current.querySelector('.MuiDataGrid-virtualScroller').scrollLeft = scrollLeft;
-      grid2Ref.current.querySelector('.MuiDataGrid-virtualScroller').scrollLeft = scrollLeft;
+      grid1Ref.current.querySelector('.MuiDataGrid-scrollbar--horizontal').scrollLeft = scrollLeft;
+      grid2Ref.current.querySelector('.MuiDataGrid-scrollbar--horizontal').scrollLeft = scrollLeft;
     }
   };
 
@@ -72,6 +73,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText }) => {
   const toggleShowDifferences = () => {
     setShowDifferences((prev) => !prev);
   };
+
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
@@ -90,7 +92,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText }) => {
           <FilterList />
         </Fab>
       </Tooltip>
-      <Box sx={{ display: 'flex', width: '100%', flexGrow: 1, flexDirection: 'row', overflowX: 'auto' }}>
+      <Box sx={{ display: 'flex', width: '100%', flexGrow: 1, flexDirection: 'row', overflowX: 'hidden' }}>
         <Box sx={{ width: '50%', display: 'flex', flexDirection: 'column' }}>
           <Box
             sx={{
@@ -120,8 +122,9 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText }) => {
               disableSelectionOnClick
               hideFooterPagination
               sx={{
-                "& .MuiDataGrid-main": {
-                  overflow: "unset",
+                overflowX: 'hidden',
+                "&.MuiDataGrid-scrollbar": {
+                  overflow: "hidden",
                 },
                 "& .MuiDataGrid-columnHeaders": {
                   position: "sticky",
@@ -165,8 +168,8 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText }) => {
               disableSelectionOnClick
               hideFooterPagination
               sx={{
-                "& .MuiDataGrid-main": {
-                  overflow: "unset",
+                "&.MuiDataGrid-scrollbar": {
+                  overflowX: "hidden"
                 },
                 "& .MuiDataGrid-columnHeaders": {
                   position: "sticky",
@@ -176,6 +179,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText }) => {
                 },
                 "& .MuiDataGrid-virtualScroller": {
                   marginTop: "0!important",
+                  overflow: "hidden",
                 },
               }}
             />
@@ -194,7 +198,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText }) => {
         onScroll={handleScroll}
         className="scrollbar-container"
       >
-        <Box sx={{ width: `${totalColumnsWidth}px`, height: '1px' }} />
+      <Box sx={{ width: `10850px`, height: '1px' }} />
       </Box>
     </Box>
   );
