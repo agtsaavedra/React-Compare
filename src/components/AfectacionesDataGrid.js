@@ -1,11 +1,21 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useState, useLayoutEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { Box } from '@mui/material';
+import { Box, Typography, Fab, Tooltip } from '@mui/material';
+import { FilterList } from '@mui/icons-material';
 
 const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText }) => {
   const grid1Ref = useRef(null);
   const grid2Ref = useRef(null);
   const [totalColumnsWidth, setTotalColumnsWidth] = useState(0);
+  const [showDifferences, setShowDifferences] = useState(false);
+
+  useLayoutEffect(() => {
+    if (grid1Ref.current && grid2Ref.current) {
+      const grid1Width = grid1Ref.current.querySelector('.MuiDataGrid-root')?.scrollWidth || 0;
+      const grid2Width = grid2Ref.current.querySelector('.MuiDataGrid-root')?.scrollWidth || 0;
+      setTotalColumnsWidth(Math.max(grid1Width, grid2Width));
+    }
+  }, [afectaciones1, afectaciones2]);
 
   const getComparisonColumns = (afectaciones1, afectaciones2, tableType) => {
     const keys = Object.keys(afectaciones1[0] || {}).concat(Object.keys(afectaciones2[0] || {}));
@@ -38,25 +48,15 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText }) => {
   const columns1 = getComparisonColumns(afectaciones1, afectaciones2, 'table1');
   const columns2 = getComparisonColumns(afectaciones2, afectaciones1, 'table2');
 
-  useEffect(() => {
-    const maxColumnWidth = Math.max(
-      columns1.reduce((sum, col) => sum + col.width, 0),
-      columns2.reduce((sum, col) => sum + col.width, 0)
-    );
-    setTotalColumnsWidth(maxColumnWidth + 50); // Add a small buffer for safety
-  }, [columns1, columns2]);
+  const filterDifferences = (rows, otherRows) => {
+    return rows.filter((row, index) => {
+      const keys = Object.keys(row);
+      return keys.some((key) => row[key] !== otherRows[index]?.[key]);
+    });
+  };
 
-  const rows1 = getRowsWithIds(afectaciones1).filter(
-    (row) =>
-      row.Legajo.toString().includes(filterText) ||
-      row.Funcion_descripcion.toLowerCase().includes(filterText.toLowerCase())
-  );
-
-  const rows2 = getRowsWithIds(afectaciones2).filter(
-    (row) =>
-      row.Legajo.toString().includes(filterText) ||
-      row.Funcion_descripcion.toLowerCase().includes(filterText.toLowerCase())
-  );
+  const filteredRows1 = showDifferences ? filterDifferences(getRowsWithIds(afectaciones1), getRowsWithIds(afectaciones2)) : getRowsWithIds(afectaciones1);
+  const filteredRows2 = showDifferences ? filterDifferences(getRowsWithIds(afectaciones2), getRowsWithIds(afectaciones1)) : getRowsWithIds(afectaciones2);
 
   const syncScroll = (scrollLeft) => {
     if (grid1Ref.current && grid2Ref.current) {
@@ -69,66 +69,136 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText }) => {
     syncScroll(e.target.scrollLeft);
   };
 
+  const toggleShowDifferences = () => {
+    setShowDifferences((prev) => !prev);
+  };
+
   return (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ display: 'flex', width: '100%', flexGrow: 1 }}>
-        <Box
-          ref={grid1Ref}
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      <Tooltip title="Listar únicamente diferencias" placement="left">
+        <Fab
+          color="primary"
+          aria-label="filter"
+          onClick={toggleShowDifferences}
           sx={{
-            width: '50%',
-            '& .MuiDataGrid-root': {
-              overflowX: 'hidden !important', // Hide the horizontal scroll
-            },
-            '& .MuiDataGrid-scrollbar--horizontal': {
-              overflowX: 'hidden !important', // Hide the horizontal scroll
-            },
+            position: 'fixed',
+            bottom: 16,
+            right: 16,
+            zIndex: 20,
           }}
         >
-          <DataGrid
-            rows={rows1}
-            columns={columns1}
-            pageSize={5}
-            rowsPerPageOptions={[5, 10, 20]}
-            checkboxSelection
-            disableColumnMenu
-            disableSelectionOnClick
-            hideFooterPagination
-          />
+          <FilterList />
+        </Fab>
+      </Tooltip>
+      <Box sx={{ display: 'flex', width: '100%', flexGrow: 1, flexDirection: 'row', overflowX: 'auto' }}>
+        <Box sx={{ width: '50%', display: 'flex', flexDirection: 'column' }}>
+          <Box
+            sx={{
+              backgroundColor: 'red',
+              padding: '8px',
+              color: 'white',
+              textAlign: 'center',
+              fontWeight: 'bold',
+            }}
+          >
+            <Typography>Lote Anterior</Typography>
+          </Box>
+          <Box
+            ref={grid1Ref}
+            sx={{
+              width: '100%',
+              height: '100%',
+            }}
+          >
+            <DataGrid
+              rows={filteredRows1}
+              columns={columns1}
+              pageSize={5}
+              rowsPerPageOptions={[5, 10, 20]}
+              checkboxSelection
+              disableColumnMenu
+              disableSelectionOnClick
+              hideFooterPagination
+              sx={{
+                "& .MuiDataGrid-main": {
+                  overflow: "unset",
+                },
+                "& .MuiDataGrid-columnHeaders": {
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 2,
+                  backgroundColor: 'white',
+                },
+                "& .MuiDataGrid-virtualScroller": {
+                  marginTop: "0!important",
+                },
+              }}
+            />
+          </Box>
         </Box>
-        <Box
-          ref={grid2Ref}
-          sx={{
-            width: '50%',
-            '& .MuiDataGrid-root': {
-              overflowX: 'hidden !important', // Hide the horizontal scroll
-            },
-            '& .MuiDataGrid-scrollbar--horizontal': {
-              overflowX: 'hidden !important', // Hide the horizontal scroll
-            },
-          }}
-        >
-          <DataGrid
-            rows={rows2}
-            columns={columns2}
-            pageSize={5}
-            rowsPerPageOptions={[5, 10, 20]}
-            checkboxSelection
-            disableColumnMenu
-            disableSelectionOnClick
-            hideFooterPagination
-          />
+        <Box sx={{ width: '50%', display: 'flex', flexDirection: 'column' }}>
+          <Box
+            sx={{
+              backgroundColor: 'green',
+              padding: '8px',
+              color: 'white',
+              textAlign: 'center',
+              fontWeight: 'bold',
+            }}
+          >
+            <Typography>Lote Posterior</Typography>
+          </Box>
+          <Box
+            ref={grid2Ref}
+            sx={{
+              width: '100%',
+              height: '100%',
+            }}
+          >
+            <DataGrid
+              rows={filteredRows2}
+              columns={columns2}
+              pageSize={5}
+              rowsPerPageOptions={[5, 10, 20]}
+              checkboxSelection
+              disableColumnMenu
+              disableSelectionOnClick
+              hideFooterPagination
+              sx={{
+                "& .MuiDataGrid-main": {
+                  overflow: "unset",
+                },
+                "& .MuiDataGrid-columnHeaders": {
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 2,
+                  backgroundColor: 'white',
+                },
+                "& .MuiDataGrid-virtualScroller": {
+                  marginTop: "0!important",
+                },
+              }}
+            />
+          </Box>
         </Box>
       </Box>
       <Box
-        sx={{ width: '100%', overflowX: 'auto', marginTop: 'auto', minHeight: '20px',   
-         }}
+        sx={{
+          width: '100%',
+          overflowX: 'auto',
+          marginTop: 'auto',
+          minHeight: '20px',
+          position: 'sticky',
+          bottom: 0,
+        }}
         onScroll={handleScroll}
-         className="scrollbar-container"
+        className="scrollbar-container"
       >
-        <Box sx={{ width: `${totalColumnsWidth+1000}px`, height: '1px' }} />
+        <Box sx={{ width: `${totalColumnsWidth}px`, height: '1px' }} />
       </Box>
     </Box>
   );
 };
 
 export default AfectacionesDataGrid;
+

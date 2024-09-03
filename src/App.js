@@ -1,341 +1,50 @@
-// src/App.js
 import React, { useState } from 'react';
-import { Box } from '@mui/material';
-import Header from './components/Header';
-import SearchBar from './components/SearchBar';
 import AfectacionesDataGrid from './components/AfectacionesDataGrid';
+import SearchBar from './components/SearchBar';
+import useFetchData from './hooks/useFetchData';
+import Loader from './components/Loader';
+import './App.css';
+import { afectacionesLocal, afectacionesLocal2 } from './var.js';
 
-function App() {
+const App = () => {
   const [filterText, setFilterText] = useState('');
 
-  const afectaciones1 = [
-    {
-        "Legajo": 4784,
-        "Regimen_idRegimen": 5,
-        "Regimen_descripcion": "Investigación",
-        "Funcion_idFuncion": 924,
-        "Funcion_descripcion": "Docentes Investigadores Jefe de Trabajos Prácticos",
-        "Unidad_idUnidad": 130,
-        "Unidad_Nombre": "Facultad de Ingeniería",
-        "Materia_materia": "FIM385",
-        "Materia_Nombre": "Lenguajes de Programación",
-        "Materia_descripcion": "FIM385 Lenguajes de Programación Primer Semestre",
-        "afectacionacademica_alcance": "1",
-        "afectacionacademica_idAfectacionAcademica": 377817,
-        "afectacionacademica_activo": true,
-        "afectacionacademica_cantidadHoras": 50,
-        "afectacionacademica_carrera": "01",
-        "afectacionacademica_estado": "P",
-        "estado_descripcion": "Propuesto",
-        "estado_resumen": "P - Propuesto",
-        "afectacionacademica_fechaDesignacion": "2024-01-01T00:00:00",
-        "afectacionacademica_fechaFinDesignacion": "2024-10-10T00:00:00",
-        "usuario_ult_modificacion": "msueldo",
-        "caracter_idCaracter": 2,
-        "caracter_nombre": "Efectivo ad-honorem",
-        "caracter_condicion": "Ordinario",
-        "caracter_resumen": "2 - Efectivo ad-honorem - Ordinario",
-        "dedicacion_idDedicacion": 2,
-        "dedicacion_Descripcion": "Parcial A",
-        "dedicacion_resumen": "2 - Parcial A",
-        "afectacionacademica_fechaFin": "2024-10-10T00:00:00",
-        "afectacionacademica_fechaInicio": "2024-01-01T00:00:00",
-        "afectacionacademica_resolucion": null,
-        "afectacionacademica_sede": "F",
-        "idAfectacionSuplida": 377751,
-        "idAfectacionSuplida_descripcion": "377751 - TEST APELLIDO, TEST NOMBRE - Profesor Titular",
-        "afectacionacademica_hashtags": "#PAGOESPECIAL,#ENPERIODODEPRUEBA,#NORENOVAR",
-        "tipocargo_idtipocargo": "I",
-        "tipocargo_descripcion": "Investigación",
-        "tipocargo_resumen": "I - Investigación",
-        "tipoplanta_IdTipoPlanta": "P",
-        "tipoplanta_descripcion": "Permanente",
-        "tipoplanta_resumen": "P - Permanente",
-        "Grupo_idGrupo": null,
-        "Grupo_descripcion": null,
-        "Grupo_resumen": null,
-        "Proyecto_idProyecto": null,
-        "Proyecto_titulo": null,
-        "Proyecto_resumen": null,
-        "ActividadTransferencia_idActividad": null,
-        "ActividadTransferencia_nombre": null,
-        "ActividadTransferencia_resumen": null,
-        "ModalidadTrabajo_idModalidadTrabajo": 1,
-        "ModalidadTrabajo_Descripcion": "Presencial",
-        "ModalidadTrabajo_resumen": "1 - Presencial",
-        "lugar_idLugar": 1,
-        "lugar_Descripcion": "Gascon 3145",
-        "lugar_resumen": "1 - Gascon 3145",
-        "AfectacionPresupuestaria": [
-            {
-                "presupuestaria_idAfectacionAfectacion": 438552,
-                "presupuestaria_idAfectacion_Padre": 377817,
-                "formadepago_idFormaPago": 2,
-                "formadepago_descripcion": "Recibo de Sueldo",
-                "formadepago_resumen": "2 - Recibo de Sueldo",
-                "presupuestaria_FechaRemuneracionDesdeAfectacion": "2024-07-02T00:00:00",
-                "presupuestaria_FechaRemuneracionHastaAfectacion": "2024-10-05T00:00:00",
-                "presupuestaria_cantidadModulosAfectacion": 25,
-                "CategoriasLiquidacion_IdCategoriaLiquidacion": 73,
-                "CategoriasLiquidacion_Codigo": "ATP-1-B",
-                "presupuestaria_activo": true,
-                "CategoriasLiquidacion_Descripcion": "Técnico Profesional-1-B",
-                "CategoriasLiquidacion_resumen": "ATP-1-B - Técnico Profesional-1-B",
-                "presupuestaria_valorModuloAfectacion": "5332.00",
-                "presupuestaria_totalLiquidacionAfectacion": "162626.00",
-                "presupuestaria_cantidadMesesHonorarioAfectacion": null,
-                "cantidadMesesHonorarioAfectacion_fraccion": null,
-                "presupuestaria_liquidarAntiguedadAfectacion": "S",
-                "presupuestaria_repetible_anualmenteAfectacion": "S",
-                "presupuestaria_repetible_mes_desdeAfectacion": 4,
-                "presupuestaria_repetible_mes_desdeAfectacion_descripcion": "Abril",
-                "presupuestaria_repetible_mes_hastaAfectacion": 9,
-                "presupuestaria_repetible_mes_hastaAfectacion_descripcion": "Septiembre",
-                "presupuestaria_centrocostoAfectacion": "",
-                "presupuestaria_liquidacionBruta": 133300,
-                "presupuestaria_antiguedadMonto": null,
-                "presupuestaria_adicionalesMonto": null,
-                "presupuestaria_bfcMonto": null,
-                "presupuestaria_observacionesAfectacion": "XXX1232FF123",
-                "presupuestaria_hashtags": "#PAGOESPECIAL",
-                "adicionalesIds": "[4,7]"
-            }
-        ]
-    },
-    {
-        "Legajo": 4784,
-        "Regimen_idRegimen": 5,
-        "Regimen_descripcion": "Investigación",
-        "Funcion_idFuncion": 923,
-        "Funcion_descripcion": "Docentes Investigadores Adjuntos",
-        "Unidad_idUnidad": 130,
-        "Unidad_Nombre": "Facultad de Ingeniería",
-        "Materia_materia": "FIM405",
-        "Materia_Nombre": "Análisis Matemático II",
-        "Materia_descripcion": "FIM405 Análisis Matemático II Primer Semestre",
-        "afectacionacademica_alcance": "1",
-        "afectacionacademica_idAfectacionAcademica": 377853,
-        "afectacionacademica_activo": true,
-        "afectacionacademica_cantidadHoras": 155,
-        "afectacionacademica_carrera": "01",
-        "afectacionacademica_estado": "P",
-        "estado_descripcion": "Propuesto",
-        "estado_resumen": "P - Propuesto",
-        "afectacionacademica_fechaDesignacion": "2024-01-01T00:00:00",
-        "afectacionacademica_fechaFinDesignacion": "2024-12-01T00:00:00",
-        "usuario_ult_modificacion": "martdelgado",
-        "caracter_idCaracter": 1,
-        "caracter_nombre": "Efectivo",
-        "caracter_condicion": "Ordinario",
-        "caracter_resumen": "1 - Efectivo - Ordinario",
-        "dedicacion_idDedicacion": null,
-        "dedicacion_Descripcion": null,
-        "dedicacion_resumen": null,
-        "afectacionacademica_fechaFin": "2024-12-01T00:00:00",
-        "afectacionacademica_fechaInicio": "2024-01-01T00:00:00",
-        "afectacionacademica_resolucion": null,
-        "afectacionacademica_sede": "F",
-        "idAfectacionSuplida": null,
-        "idAfectacionSuplida_descripcion": null,
-        "afectacionacademica_hashtags": "#PAGOESPECIAL,#NORENOVAR",
-        "tipocargo_idtipocargo": "I",
-        "tipocargo_descripcion": "Investigación",
-        "tipocargo_resumen": "I - Investigación",
-        "tipoplanta_IdTipoPlanta": "P",
-        "tipoplanta_descripcion": "Permanente",
-        "tipoplanta_resumen": "P - Permanente",
-        "Grupo_idGrupo": null,
-        "Grupo_descripcion": null,
-        "Grupo_resumen": null,
-        "Proyecto_idProyecto": null,
-        "Proyecto_titulo": null,
-        "Proyecto_resumen": null,
-        "ActividadTransferencia_idActividad": null,
-        "ActividadTransferencia_nombre": null,
-        "ActividadTransferencia_resumen": null,
-        "ModalidadTrabajo_idModalidadTrabajo": 1,
-        "ModalidadTrabajo_Descripcion": "Presencial",
-        "ModalidadTrabajo_resumen": "1 - Presencial",
-        "lugar_idLugar": 1,
-        "lugar_Descripcion": "Gascon 3145",
-        "lugar_resumen": "1 - Gascon 3145",
-        "AfectacionPresupuestaria": null
-    }
-  ];
-  
-  
-  const afectaciones2 = [
-    {
-        "Legajo": 4786,
-        "Regimen_idRegimen": 2,
-        "Regimen_descripcion": "Investigación",
-        "Funcion_idFuncion": 924,
-        "Funcion_descripcion": "Docentes Investigadores Jefe de Trabajos Prácticos",
-        "Unidad_idUnidad": 131,
-        "Unidad_Nombre": "Facultad de Ingeniería",
-        "Materia_materia": "FIM386",
-        "Materia_Nombre": "Lenguajes de Programación",
-        "Materia_descripcion": "FIM386 Lenguajes de Programacióne",
-        "afectacionacademica_alcance": "1",
-        "afectacionacademica_idAfectacionAcademica": 377817,
-        "afectacionacademica_activo": true,
-        "afectacionacademica_cantidadHoras": 50,
-        "afectacionacademica_carrera": "01",
-        "afectacionacademica_estado": "P",
-        "estado_descripcion": "Propuesto",
-        "estado_resumen": "P - Propuesto",
-        "afectacionacademica_fechaDesignacion": "2024-01-01T00:00:00",
-        "afectacionacademica_fechaFinDesignacion": "2024-10-10T00:00:00",
-        "usuario_ult_modificacion": "msueldo",
-        "caracter_idCaracter": 2,
-        "caracter_nombre": "Efectivo ad-honorem",
-        "caracter_condicion": "Ordinario",
-        "caracter_resumen": "2 - Efectivo ad-honorem - Ordinario",
-        "dedicacion_idDedicacion": 2,
-        "dedicacion_Descripcion": "Parcial A",
-        "dedicacion_resumen": "2 - Parcial A",
-        "afectacionacademica_fechaFin": "2024-10-10T00:00:00",
-        "afectacionacademica_fechaInicio": "2024-01-01T00:00:00",
-        "afectacionacademica_resolucion": null,
-        "afectacionacademica_sede": "F",
-        "idAfectacionSuplida": 377751,
-        "idAfectacionSuplida_descripcion": "377751 - TEST APELLIDO, TEST NOMBRE - Profesor Titular",
-        "afectacionacademica_hashtags": "#PAGOESPECIAL,#ENPERIODODEPRUEBA,#NORENOVAR",
-        "tipocargo_idtipocargo": "I",
-        "tipocargo_descripcion": "Investigación",
-        "tipocargo_resumen": "I - Investigación",
-        "tipoplanta_IdTipoPlanta": "P",
-        "tipoplanta_descripcion": "Permanente",
-        "tipoplanta_resumen": "P - Permanente",
-        "Grupo_idGrupo": null,
-        "Grupo_descripcion": null,
-        "Grupo_resumen": null,
-        "Proyecto_idProyecto": null,
-        "Proyecto_titulo": null,
-        "Proyecto_resumen": null,
-        "ActividadTransferencia_idActividad": null,
-        "ActividadTransferencia_nombre": null,
-        "ActividadTransferencia_resumen": null,
-        "ModalidadTrabajo_idModalidadTrabajo": 1,
-        "ModalidadTrabajo_Descripcion": "Presencial",
-        "ModalidadTrabajo_resumen": "1 - Presencial",
-        "lugar_idLugar": 1,
-        "lugar_Descripcion": "Gascon 3145",
-        "lugar_resumen": "1 - Gascon 3145",
-        "AfectacionPresupuestaria": [
-            {
-                "presupuestaria_idAfectacionAfectacion": 438552,
-                "presupuestaria_idAfectacion_Padre": 377817,
-                "formadepago_idFormaPago": 2,
-                "formadepago_descripcion": "Recibo de Sueldo",
-                "formadepago_resumen": "2 - Recibo de Sueldo",
-                "presupuestaria_FechaRemuneracionDesdeAfectacion": "2024-07-02T00:00:00",
-                "presupuestaria_FechaRemuneracionHastaAfectacion": "2024-10-05T00:00:00",
-                "presupuestaria_cantidadModulosAfectacion": 25,
-                "CategoriasLiquidacion_IdCategoriaLiquidacion": 73,
-                "CategoriasLiquidacion_Codigo": "ATP-1-B",
-                "presupuestaria_activo": true,
-                "CategoriasLiquidacion_Descripcion": "Técnico Profesional-1-B",
-                "CategoriasLiquidacion_resumen": "ATP-1-B - Técnico Profesional-1-B",
-                "presupuestaria_valorModuloAfectacion": "5332.00",
-                "presupuestaria_totalLiquidacionAfectacion": "162626.00",
-                "presupuestaria_cantidadMesesHonorarioAfectacion": null,
-                "cantidadMesesHonorarioAfectacion_fraccion": null,
-                "presupuestaria_liquidarAntiguedadAfectacion": "S",
-                "presupuestaria_repetible_anualmenteAfectacion": "S",
-                "presupuestaria_repetible_mes_desdeAfectacion": 4,
-                "presupuestaria_repetible_mes_desdeAfectacion_descripcion": "Abril",
-                "presupuestaria_repetible_mes_hastaAfectacion": 9,
-                "presupuestaria_repetible_mes_hastaAfectacion_descripcion": "Septiembre",
-                "presupuestaria_centrocostoAfectacion": "",
-                "presupuestaria_liquidacionBruta": 133300,
-                "presupuestaria_antiguedadMonto": null,
-                "presupuestaria_adicionalesMonto": null,
-                "presupuestaria_bfcMonto": null,
-                "presupuestaria_observacionesAfectacion": "XXX1232FF123",
-                "presupuestaria_hashtags": "#PAGOESPECIAL",
-                "adicionalesIds": "[4,7]"
-            }
-        ]
-    },
-    {
-        "Legajo": 4784,
-        "Regimen_idRegimen": 5,
-        "Regimen_descripcion": "Investigación",
-        "Funcion_idFuncion": 923,
-        "Funcion_descripcion": "Docentes Investigadores Adjuntos",
-        "Unidad_idUnidad": 130,
-        "Unidad_Nombre": "Facultad de Ingeniería",
-        "Materia_materia": "FIM405",
-        "Materia_Nombre": "Análisis Matemático II",
-        "Materia_descripcion": "FIM405 Análisis Matemático II Primer Semestre",
-        "afectacionacademica_alcance": "1",
-        "afectacionacademica_idAfectacionAcademica": 377853,
-        "afectacionacademica_activo": true,
-        "afectacionacademica_cantidadHoras": 155,
-        "afectacionacademica_carrera": "01",
-        "afectacionacademica_estado": "P",
-        "estado_descripcion": "Propuesto",
-        "estado_resumen": "P - Propuesto",
-        "afectacionacademica_fechaDesignacion": "2024-01-01T00:00:00",
-        "afectacionacademica_fechaFinDesignacion": "2024-12-01T00:00:00",
-        "usuario_ult_modificacion": "martdelgado",
-        "caracter_idCaracter": 1,
-        "caracter_nombre": "Efectivo",
-        "caracter_condicion": "Ordinario",
-        "caracter_resumen": "1 - Efectivo - Ordinario",
-        "dedicacion_idDedicacion": null,
-        "dedicacion_Descripcion": null,
-        "dedicacion_resumen": null,
-        "afectacionacademica_fechaFin": "2024-12-01T00:00:00",
-        "afectacionacademica_fechaInicio": "2024-01-01T00:00:00",
-        "afectacionacademica_resolucion": null,
-        "afectacionacademica_sede": "F",
-        "idAfectacionSuplida": null,
-        "idAfectacionSuplida_descripcion": null,
-        "afectacionacademica_hashtags": "#PAGOESPECIAL,#NORENOVAR",
-        "tipocargo_idtipocargo": "I",
-        "tipocargo_descripcion": "Investigación",
-        "tipocargo_resumen": "I - Investigación",
-        "tipoplanta_IdTipoPlanta": "P",
-        "tipoplanta_descripcion": "Permanente",
-        "tipoplanta_resumen": "P - Permanente",
-        "Grupo_idGrupo": null,
-        "Grupo_descripcion": null,
-        "Grupo_resumen": null,
-        "Proyecto_idProyecto": null,
-        "Proyecto_titulo": null,
-        "Proyecto_resumen": null,
-        "ActividadTransferencia_idActividad": null,
-        "ActividadTransferencia_nombre": null,
-        "ActividadTransferencia_resumen": null,
-        "ModalidadTrabajo_idModalidadTrabajo": 1,
-        "ModalidadTrabajo_Descripcion": "Presencial",
-        "ModalidadTrabajo_resumen": "1 - Presencial",
-        "lugar_idLugar": 1,
-        "lugar_Descripcion": "Gascon 3145",
-        "lugar_resumen": "1 - Gascon 3145",
-        "AfectacionPresupuestaria": null
-    }
-  ];
+  // Supongamos que estos son los endpoints que vas a utilizar para obtener los datos
+  const url1 = 'https://services-dev.ufasta.edu.ar/a/perso/snap/compare/1/2';
+  const url2 = 'https://services-dev.ufasta.edu.ar/a/perso/snap/compare/2/1';
+
+  // Utiliza el hook personalizado para obtener los datos y el estado de carga
+  const { data: afectaciones1, loading: loading1, error: error1 } = useFetchData(url1);
+  const { data: afectaciones2, loading: loading2, error: error2 } = useFetchData(url2);
+
+  // Determina si se está cargando cualquiera de las dos solicitudes
+  const isLoading = loading1 || loading2;
+
+  // Si hay error o los datos son nulos o indefinidos, usar datos locales
+  const finalAfectaciones1 = afectaciones1 && afectaciones1.length > 0 ? afectaciones1 : afectacionesLocal;
+  const finalAfectaciones2 = afectaciones2 && afectaciones2.length > 0 ? afectaciones2 : afectacionesLocal2;
+
+  // Mostrar el error solo si no hay datos ni del servidor ni locales
+  const hasError = (error1 || error2) && (!finalAfectaciones1.length || !finalAfectaciones2.length);
 
   return (
-    <div style={{ height: '100vh', width: '100vw', padding: '0', margin: '0', boxSizing: 'border-box' }}>
-      <Header />
-      <SearchBar filterText={filterText} setFilterText={setFilterText} />
-      <Box  sx={{ height: 'calc(100% - 130px)', display: 'flex', gap: '10px', paddingTop: '90px' }}>
-        <Box sx={{ width: '100%', height: '100%' }}>
+    <div className="App">
+      {isLoading ? (
+        <Loader />
+      ) : hasError ? (
+        <div className="error-message">Error al llamar al servicio</div>
+      ) : (
+        <>
+          <SearchBar filterText={filterText} onFilterTextChange={setFilterText} />
           <AfectacionesDataGrid
-            afectaciones1={afectaciones1}
-            afectaciones2={afectaciones2}
-            tableType="table1"
+            afectaciones1={finalAfectaciones1}
+            afectaciones2={finalAfectaciones2}
             filterText={filterText}
           />
-        </Box>
-        
-      </Box>
+        </>
+      )}
     </div>
   );
-}
+};
 
 export default App;
