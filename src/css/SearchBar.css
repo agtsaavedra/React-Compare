@@ -1,5 +1,6 @@
 /* src/components/SearchBar.css */
 .searchbar-box {
+  
   align-items: center;
   background-color: #5c6bc0;
   display: flex;
@@ -8,7 +9,8 @@
   position: relative; /* Cambiado desde absolute */
   width: 100%;
   z-index: 10;
-  overflow-x: hidden ;
+  
+  top: 0;
 }
 
 

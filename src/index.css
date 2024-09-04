@@ -4,8 +4,7 @@ body {
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden; /* Esconder cualquier scroll horizontal en el cuerpo */
+  
 }
 
 body,
@@ -41,7 +40,6 @@ code {
 
 .scrollbar-container {
   background-color: #5c6bc0;
-  overflow-x: auto!important;
   display: flex;
   width: 100%;
   position: sticky; /* Mantiene la barra en la posición mientras se hace scroll */
@@ -49,6 +47,14 @@ code {
   z-index: 10; /* Asegura que esté por encima de otros elementos */
 }
 
+
+
+
+.searchbar-box {
+  position: sticky;
+  top: 0;
+  z-index: 1000; /* Make sure it's above the grid */
+}
 .scrollbar-container > * {
   flex-shrink: 0;
   min-width: 100%;
@@ -68,20 +74,10 @@ code {
   border: 2px solid #5c6bc0;
 }
 
-.MuiDataGrid-columnHeaders, .MuiDataGrid-topContainer, .MuiDataGrid-container--top:nth-child(3) {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 3 !important; /* Asegura que esté por encima de otros elementos */
 
-}
 
-.MuiDataGrid-root {
-  overflow-x: auto !important;  /* Fuerza el scroll horizontal */
-}
 
-.MuiDataGrid-main {
-  overflow-x: auto !important;  /* Asegura que la tabla pueda desplazarse horizontalmente */
-}
+
 
 .scrollbar-container {
   overflow-x: auto !important;  /* Asegura que la barra de desplazamiento horizontal esté visible */
@@ -91,6 +87,27 @@ code {
   overflow-x: hidden!important;
 }
 
-.MuiDataGrid-main{
-  overflow-x: hidden!important;
+
+.MuiDataGrid-columnHeaders {
+  position: sticky !important;
+  top: 100px !important; /* Ajusta según el tamaño de los otros elementos fijos */
+  z-index: 500; /* Debe estar por debajo de la barra de búsqueda */
+  background-color: white; /* Para que no se solape con el contenido de las filas */
 }
+
+.searchbar-box {
+  position: sticky;
+  top: 0;
+  z-index: 1000; /* Asegura que está por encima de todos los elementos */
+  background-color: white;
+}
+
+
+.lote-box {
+  position: sticky;
+  top: 50px; /* Ajusta según el tamaño de la barra de búsqueda */
+  z-index: 900;
+  background-color: white;
+}
+
+
