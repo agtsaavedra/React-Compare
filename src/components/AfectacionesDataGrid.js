@@ -10,6 +10,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText, availa
   const [page, setPage] = useState(1); // Estado para la página
   const [showDifferences, setShowDifferences] = useState(false); // Estado para mostrar diferencias
   const [loading, setLoading] = useState(false); // Estado de carga
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 
   const rowHeight = 52; // Altura aproximada de cada fila en la tabla (ajústalo según el diseño)
   
@@ -61,9 +62,22 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText, availa
   const allRows2 = getRowsWithIds(afectaciones2);
 
   useEffect(() => {
-    const newPageSize = Math.floor((availableHeight - 150) / rowHeight);
+    const handleResize = () => {
+      setWindowHeight(window.innerHeight);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  // Recalcula el tamaño de las filas cuando cambie la altura disponible o el tamaño de pantalla
+  useEffect(() => {
+    const newPageSize = Math.floor((windowHeight - 150) / rowHeight);
     setPageSize(newPageSize > 0 ? newPageSize : 1);
-  }, [availableHeight]);
+  }, [windowHeight]);
 
   // Aplica el filtro de diferencias si está activo
   const filteredRows1 = showDifferences ? filterDifferences(allRows1, allRows2) : allRows1;
