@@ -11,7 +11,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText, availa
   const [showDifferences, setShowDifferences] = useState(false); // Estado para mostrar diferencias
   const [loading, setLoading] = useState(false); // Estado de carga
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
-
+  
   const rowHeight = 52; // Altura aproximada de cada fila en la tabla (ajústalo según el diseño)
   
   const [pageSize, setPageSize] = useState(null);
@@ -60,8 +60,14 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText, availa
 
   const allRows1 = getRowsWithIds(afectaciones1);
   const allRows2 = getRowsWithIds(afectaciones2);
+    // Aplica el filtro de diferencias si está activo
+    const filteredRows1 = showDifferences ? filterDifferences(allRows1, allRows2) : allRows1;
+    const filteredRows2 = showDifferences ? filterDifferences(allRows2, allRows1) : allRows2;
+  
+    const maxRows = Math.max(filteredRows1.length, filteredRows2.length);
 
-  useEffect(() => {
+   // Actualiza el tamaño de la ventana cuando cambie el tamaño de pantalla
+   useEffect(() => {
     const handleResize = () => {
       setWindowHeight(window.innerHeight);
     };
@@ -77,11 +83,15 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText, availa
   useEffect(() => {
     const newPageSize = Math.floor((windowHeight - 150) / rowHeight);
     setPageSize(newPageSize > 0 ? newPageSize : 1);
-  }, [windowHeight]);
 
-  // Aplica el filtro de diferencias si está activo
-  const filteredRows1 = showDifferences ? filterDifferences(allRows1, allRows2) : allRows1;
-  const filteredRows2 = showDifferences ? filterDifferences(allRows2, allRows1) : allRows2;
+    // Ajustar la página si la actual ya no es válida
+    const maxPages = Math.ceil(maxRows / newPageSize);
+    if (page > maxPages) {
+      setPage(maxPages); // Ajusta la página si es mayor que el máximo disponible
+    }
+  }, [windowHeight, maxRows, page]);
+
+
 
   const paginatedAfectaciones1 = filteredRows1.slice((page - 1) * pageSize, page * pageSize);
   const paginatedAfectaciones2 = filteredRows2.slice((page - 1) * pageSize, page * pageSize);
