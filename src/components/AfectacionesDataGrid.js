@@ -15,7 +15,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText, availa
   
   const [pageSize, setPageSize] = useState(null);
 
-  const calculatedGridHeight = pageSize ? pageSize * rowHeight + 80 : availableHeight;
+  const calculatedGridHeight = pageSize ? pageSize * rowHeight + 100 : availableHeight;
   // Calcula las columnas para la comparación
   const getComparisonColumns = (afectaciones1, afectaciones2, tableType) => {
     const keys = Object.keys(afectaciones1[0] || {}).concat(Object.keys(afectaciones2[0] || {}));
