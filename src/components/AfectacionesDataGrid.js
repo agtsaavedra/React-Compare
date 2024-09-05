@@ -1,4 +1,4 @@
-import React, { useRef, useState, useLayoutEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { Box, Typography, Fab, Tooltip, Pagination } from '@mui/material';
 import { FilterList } from '@mui/icons-material';
@@ -12,9 +12,10 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText, availa
   const [loading, setLoading] = useState(false); // Estado de carga
 
   const rowHeight = 52; // Altura aproximada de cada fila en la tabla (ajústalo según el diseño)
-  const maxPageSize = 10; // Máximo número de filas por página
-  const minHeight = rowHeight * maxPageSize; // Altura mínima calculada para la tabla
+  
+  const [pageSize, setPageSize] = useState(null);
 
+  const calculatedGridHeight = pageSize ? pageSize * rowHeight + 80 : availableHeight;
   // Calcula las columnas para la comparación
   const getComparisonColumns = (afectaciones1, afectaciones2, tableType) => {
     const keys = Object.keys(afectaciones1[0] || {}).concat(Object.keys(afectaciones2[0] || {}));
@@ -59,12 +60,19 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText, availa
   const allRows1 = getRowsWithIds(afectaciones1);
   const allRows2 = getRowsWithIds(afectaciones2);
 
+  useEffect(() => {
+    const newPageSize = Math.floor((availableHeight - 150) / rowHeight);
+    setPageSize(newPageSize > 0 ? newPageSize : 1);
+  }, [availableHeight]);
+
   // Aplica el filtro de diferencias si está activo
   const filteredRows1 = showDifferences ? filterDifferences(allRows1, allRows2) : allRows1;
   const filteredRows2 = showDifferences ? filterDifferences(allRows2, allRows1) : allRows2;
 
-  const paginatedAfectaciones1 = filteredRows1.slice((page - 1) * maxPageSize, page * maxPageSize);
-  const paginatedAfectaciones2 = filteredRows2.slice((page - 1) * maxPageSize, page * maxPageSize);
+  const paginatedAfectaciones1 = filteredRows1.slice((page - 1) * pageSize, page * pageSize);
+  const paginatedAfectaciones2 = filteredRows2.slice((page - 1) * pageSize, page * pageSize);
+  console.log(paginatedAfectaciones1)
+  console.log(pageSize)
 
   const syncScroll = (scrollLeft) => {
     if (grid1Ref.current && grid2Ref.current) {
@@ -89,7 +97,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText, availa
   };
 
   return (
-    <Box sx={{ height: availableHeight, display: 'flex', flexDirection: 'column', position: 'relative' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
       {/* Botón para filtrar diferencias */}
       <Tooltip title="Listar únicamente diferencias" placement="left">
         <Fab
@@ -150,13 +158,14 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText, availa
 
           {/* Contenedor para las dos tablas */}
           <Box sx={{ display: 'flex', width: '100%', flexGrow: 1 }}>
-            <Box ref={grid1Ref} sx={{ width: '50%', height: minHeight }}>
+            <Box ref={grid1Ref} sx={{ width: '50%', height: calculatedGridHeight, }}>
               <DataGrid
                 rows={paginatedAfectaciones1}
                 columns={getComparisonColumns(afectaciones1, afectaciones2, 'table1')}
-                pageSize={maxPageSize}
+                pageSize={pageSize}
                 hideFooterPagination
                 disableSelectionOnClick
+                
                 sx={{
                   '& .MuiDataGrid-columnHeaders': {
                     position: 'sticky',
@@ -167,14 +176,20 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText, availa
                   '& .MuiDataGrid-main': {
                     overflow: 'visible',
                   },
+                  '& .MuiDataGrid-footerContainer':{
+                    display: 'none'
+                  },
+                  '& .MuiDataGrid-filler': {
+                    display: 'none'
+                  }
                 }}
               />
             </Box>
-            <Box ref={grid2Ref} sx={{ width: '50%', height: minHeight }}>
+            <Box ref={grid2Ref} sx={{ width: '50%' , height: calculatedGridHeight}}>
               <DataGrid
                 rows={paginatedAfectaciones2}
                 columns={getComparisonColumns(afectaciones1, afectaciones2, 'table2')}
-                pageSize={maxPageSize}
+                pageSize={pageSize}
                 hideFooterPagination
                 disableSelectionOnClick
                 sx={{
@@ -187,6 +202,12 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText, availa
                   '& .MuiDataGrid-main': {
                     overflow: 'visible',
                   },
+                  '& .MuiDataGrid-footerContainer':{
+                    display: 'none'
+                  },
+                  '& .MuiDataGrid-filler': {
+                    display: 'none'
+                  }
                 }}
               />
             </Box>
@@ -194,7 +215,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, filterText, availa
           {/* Paginador común para ambas tablas */}
           <Box display="flex" justifyContent="center" marginTop="16px">
             <Pagination
-              count={Math.ceil(Math.max(filteredRows1.length, filteredRows2.length) / maxPageSize)}
+              count={Math.ceil(Math.max(filteredRows1.length, filteredRows2.length) / pageSize)}
               page={page}
               onChange={handlePageChange}
               color="primary"
