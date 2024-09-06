@@ -42,9 +42,9 @@ code {
   background-color: #5c6bc0;
   display: flex;
   width: 100%;
-  position: sticky; /* Mantiene la barra en la posición mientras se hace scroll */
-  bottom: 0; /* Fija la barra de scroll en la parte inferior */
-  z-index: 10; /* Asegura que esté por encima de otros elementos */
+ /* Mantiene la barra en la posición mientras se hace scroll */
+  /* Fija la barra de scroll en la parte inferior */
+   /* Asegura que esté por encima de otros elementos */
 }
 
 
@@ -55,13 +55,51 @@ code {
   top: 0;
   z-index: 1000; /* Make sure it's above the grid */
 }
+.scrollbar-container {
+  padding: 1px;
+  background-color: #5c6bc0;
+  display: flex;
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 3px; /* Habilita el scroll horizontal */
+}
+
 .scrollbar-container > * {
   flex-shrink: 0;
   min-width: 100%;
 }
 
 .scrollbar-container::-webkit-scrollbar {
-  height: 10px;
+  height: 11px;
+}
+
+.scrollbar-container::-webkit-scrollbar-track {
+  background: #5c6bc0;
+}
+
+.scrollbar-container::-webkit-scrollbar-thumb {
+  background-color: #ffffff;
+  border-radius: 4px;
+  border: 2px solid #5c6bc0;
+}
+
+
+.scrollbar-container {
+  padding: 1px;
+  background-color: #5c6bc0;
+  display: flex;
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 3px; /* Habilita el scroll horizontal */
+}
+
+.scrollbar-container > * {
+  flex-shrink: 0;
+  min-width: 100%;
+}
+
+.scrollbar-container::-webkit-scrollbar {
+  height: 11px;
 }
 
 .scrollbar-container::-webkit-scrollbar-track {
@@ -76,12 +114,34 @@ code {
 
 
 
-
-
-
-.scrollbar-container {
-  overflow-x: auto !important;  /* Asegura que la barra de desplazamiento horizontal esté visible */
+.scrollbar-container-pinned {
+  padding: 1px;
+  background-color: green;
+  display: flex;
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 3px; /* Habilita el scroll horizontal */
 }
+
+.scrollbar-container-pinned > * {
+  flex-shrink: 0;
+  min-width: 100%;
+}
+
+.scrollbar-container-pinned::-webkit-scrollbar {
+  height: 11px;
+}
+
+.scrollbar-container-pinned::-webkit-scrollbar-track {
+  background: green;
+}
+
+.scrollbar-container-pinned::-webkit-scrollbar-thumb {
+  background-color: #ffffff;
+  border-radius: 4px;
+  border: 2px solid green;
+}
+
 
 .MuiDataGrid-scrollbar {
   overflow-x: hidden!important;
@@ -95,12 +155,7 @@ code {
   background-color: white; /* Para que no se solape con el contenido de las filas */
 }
 
-.searchbar-box {
-  position: sticky;
-  top: 0;
-  z-index: 1000; /* Asegura que está por encima de todos los elementos */
-  background-color: white;
-}
+
 
 
 .lote-box {

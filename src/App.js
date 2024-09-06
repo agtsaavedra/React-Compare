@@ -5,7 +5,7 @@ import useFetchData from './hooks/useFetchData';
 import Loader from './components/Loader';
 import { useRef } from 'react';
 import { useEffect } from 'react';
-import { afectacionesLocal, afectacionesLocal2 } from './var.js';
+import { afectacionesLocal, afectacionesLocal2, pinnedafect } from './var.js';
 
 const App = () => {
   const [filterText, setFilterText] = useState('');
@@ -28,7 +28,7 @@ const App = () => {
 
   // Mostrar el error solo si no hay datos ni del servidor ni locales
   const hasError = (error1 || error2) && (!finalAfectaciones1.length || !finalAfectaciones2.length);
-  console.log(availableHeight)
+  
   const delayedSearch = (searchTerm) => {
     setFilterText(searchTerm); // Cambia el estado con el valor del término de búsqueda
   };
@@ -38,8 +38,9 @@ const App = () => {
       if (searchBarRef.current) {
         console.log(searchBarHeight)
         const searchBarHeight = searchBarRef.current.getBoundingClientRect().height;
-        const availableHeight = window.innerHeight - searchBarHeight; // Altura disponible entre SearchBar y el scrollbar
+        const availableHeight = window.innerHeight - 169; // Altura disponible entre SearchBar y el scrollbar
         setAvailableHeight(availableHeight);
+        console.log(availableHeight)
       }
     };
 
@@ -60,6 +61,7 @@ const App = () => {
           <AfectacionesDataGrid
             afectaciones1={finalAfectaciones1}
             afectaciones2={finalAfectaciones2}
+            pinnedAfect={pinnedafect}
             filterText={filterText}
             availableHeight={availableHeight}  
           />
