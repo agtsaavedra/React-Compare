@@ -103,20 +103,20 @@ code {
 }
 
 .scrollbar-container::-webkit-scrollbar-track {
-  background: #5c6bc0;
+  background: white;
 }
 
 .scrollbar-container::-webkit-scrollbar-thumb {
-  background-color: #ffffff;
+  background-color: #5c6bc0;
   border-radius: 4px;
-  border: 2px solid #5c6bc0;
+  border: 2px solid white;
 }
 
 
 
 .scrollbar-container-pinned {
   padding: 1px;
-  background-color: green;
+  background-color: white;
   display: flex;
   width: 100%;
   overflow-x: auto;
@@ -133,13 +133,13 @@ code {
 }
 
 .scrollbar-container-pinned::-webkit-scrollbar-track {
-  background: grey;
+  background: white;
 }
 
 .scrollbar-container-pinned::-webkit-scrollbar-thumb {
-  background-color: #ffffff;
+  background-color: #000000;
   border-radius: 4px;
-  border: 2px solid grey;
+  border: 2px solid white;
 }
 
 

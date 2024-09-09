@@ -3,56 +3,11 @@ import { DataGrid } from '@mui/x-data-grid';
 import { Box, Typography, Fab, Tooltip, Pagination } from '@mui/material';
 import { FilterList } from '@mui/icons-material';
 import Loader from './Loader';
+import { calculateColumnWidth, calculateTotalWidth, getPinnedColumns, getComparisonColumns } from '../utils/columnUtils';
+import TooltipFab from './TooltipFab';
+import PaginationComponent from './PaginationComponent';
+import HeaderBoxes from './HeaderBoxes';
 
-// Función para calcular el ancho de las columnas basadas en el contenido
-const calculateColumnWidth = (field, rows, headerText) => {
-  const headerWidth = headerText.length * 10;
-  const maxCellWidth = Math.max(
-    ...rows.map((row) => String(row[field] || '').length * 10)
-  );
-  return Math.max(headerWidth, maxCellWidth);
-};
-
-// Calcula el ancho total de las columnas de una tabla
-const calculateTotalWidth = (columns) => {
-  return columns.reduce((totalWidth, col) => totalWidth + col.width, 0);
-};
-
-const getPinnedColumns = (pinnedAfect) => {
-  const pinnedColumnOrder = ['Legajo', 'nombre', 'EnSnap', 'funcion', 'CategoriaLiquidacion', 'idAfectacionAcademica', 'idAfectacionPresupuestaria' ] ;
-
-  return pinnedColumnOrder.map((key) => ({
-    field: key,
-    headerName: key.replace(/_/g, ' ').toUpperCase(),
-    width: calculateColumnWidth(key, pinnedAfect, key.replace(/_/g, ' ').toUpperCase()),
-    headerClassName: 'header-cell',
-    cellClassName: (params) => '',
-  }));
-};
-
-const getComparisonColumns = (afectaciones1, afectaciones2, tableType, pinnedKeys = []) => {
-  const keys = Object.keys(afectaciones1[0] || {}).concat(Object.keys(afectaciones2[0] || {}));
-  const uniqueKeys = [...new Set(keys)];
-
-  const filteredKeys = tableType === 'tablePinned' ? uniqueKeys : uniqueKeys.filter((key) => !pinnedKeys.includes(key));
-
-  return filteredKeys.map((key) => ({
-    field: key,
-    headerName: key.replace(/_/g, ' ').toUpperCase(),
-    width: calculateColumnWidth(key, afectaciones1.concat(afectaciones2), key.replace(/_/g, ' ').toUpperCase()),
-    headerClassName: 'header-cell',
-    cellClassName: (params) => {
-      const rowIndex = params.id - 1;
-      const value1 = afectaciones1[rowIndex] ? afectaciones1[rowIndex][key] : null;
-      const value2 = afectaciones2[rowIndex] ? afectaciones2[rowIndex][key] : null;
-
-      if (value1 !== value2) {
-        return tableType === 'table1' ? 'cell-different-red' : 'cell-different-green';
-      }
-      return '';
-    },
-  }));
-};
 
 const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filterText, availableHeight }) => {
   const grid1Ref = useRef(null);
@@ -155,21 +110,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', position: 'relative', height: 'calc(100vh - 90px - 160px)' }}>
-      <Tooltip title="Listar únicamente diferencias" placement="left">
-        <Fab
-          color="primary"
-          aria-label="filter"
-          onClick={() => setShowDifferences(!showDifferences)}
-          sx={{
-            position: 'fixed',
-            bottom: 16,
-            right: 16,
-            zIndex: 20,
-          }}
-        >
-          <FilterList />
-        </Fab>
-      </Tooltip>
+       <TooltipFab showDifferences={showDifferences} setShowDifferences={setShowDifferences} />
 
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
@@ -179,48 +120,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
         <>
           <Box sx={{ display: 'flex', width: '100%', position: 'sticky', zIndex: 1000, boxSizing: 'border-box' }}>
 
-          <Box
-              sx={{
-                width: '20%',
-                backgroundColor: 'grey',
-                padding: '8px',
-                color: 'white',
-                textAlign: 'center',
-                fontWeight: 'bold',
-                boxSizing: 'border-box',
-                margin: 0,
-              }}
-            >
-              <Typography>Personal</Typography>
-            </Box>
-            <Box
-              sx={{
-                width: '40%',
-                backgroundColor: 'red',
-                padding: '8px',
-                color: 'white',
-                textAlign: 'center',
-                fontWeight: 'bold',
-                boxSizing: 'border-box',
-                margin: 0,
-              }}
-            >
-              <Typography>Lote Anterior</Typography>
-            </Box>
-            <Box
-              sx={{
-                width: '40%',
-                backgroundColor: 'green',
-                padding: '8px',
-                color: 'white',
-                textAlign: 'center',
-                fontWeight: 'bold',
-                boxSizing: 'border-box',
-                margin: 0,
-              }}
-            >
-              <Typography>Lote Posterior</Typography>
-            </Box>
+          <HeaderBoxes />
           </Box>
 
           {/* Contenedor para las tres tablas */}
@@ -264,7 +164,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
                   sx={{
                     width: '100%',
                     height: '12px',
-                    backgroundColor: 'grey',
+                    backgroundColor: 'white',
                     borderRadius: '8px',
                     marginTop: 'auto',
                     overflowX: 'auto',
@@ -354,7 +254,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
                   sx={{
                     width: '100%',
                     height: '12px',
-                    backgroundColor: '#5c6bc0',
+                    backgroundColor: 'white',
                     borderRadius: '8px',
                     marginTop: 'auto',
                     overflowX: 'auto',
@@ -370,7 +270,12 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
           </Box>
 
           <Box display="flex" justifyContent="center" marginTop="16px">
-            <Pagination count={Math.ceil(maxRows / pageSize)} page={page} onChange={handlePageChange} color="primary" />
+          <PaginationComponent
+              maxRows={maxRows}
+              pageSize={pageSize}
+              page={page}
+              handlePageChange={handlePageChange}
+            />
           </Box>
         </>
       )}
