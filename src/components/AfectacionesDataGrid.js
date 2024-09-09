@@ -19,7 +19,7 @@ const calculateTotalWidth = (columns) => {
 };
 
 const getPinnedColumns = (pinnedAfect) => {
-  const pinnedColumnOrder = ['Legajo', 'nombre', 'EnSnap'];
+  const pinnedColumnOrder = ['Legajo', 'nombre', 'EnSnap', 'funcion', 'CategoriaLiquidacion', 'idAfectacionAcademica', 'idAfectacionPresupuestaria' ] ;
 
   return pinnedColumnOrder.map((key) => ({
     field: key,
@@ -111,7 +111,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
   }, []);
 
   useEffect(() => {
-    const newPageSize = Math.floor((windowHeight - 150) / rowHeight);
+    const newPageSize = Math.floor((windowHeight - 250) / rowHeight);
     setPageSize(newPageSize > 0 ? newPageSize : 1);
 
     const maxPages = Math.ceil(maxRows / newPageSize);
@@ -120,13 +120,13 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
     }
 
     // Calcula el ancho total de las columnas para sincronizar el ancho del scrollbar
-    const totalWidth = calculateTotalWidth(getComparisonColumns(afectaciones1, afectaciones2, 'table1')) +
-      calculateTotalWidth(getComparisonColumns(afectaciones1, afectaciones2, 'table2'));
+    const totalWidth = calculateTotalWidth(getComparisonColumns(afectaciones1, afectaciones2, 'table1'))  + 900 
 
     const totalPinnedWidth = calculateTotalWidth(getPinnedColumns(pinnedAfect)); // Para tabla pinned
 
     setScrollbarWidth(totalWidth);
     setPinnedScrollbarWidth(totalPinnedWidth);
+    
 
   }, [windowHeight, maxRows, page, afectaciones1, afectaciones2, pinnedAfect]);
 
@@ -154,7 +154,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
   const pinnedKeys = Object.keys(pinnedAfect[0] || {});
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', position: 'relative', height: '100%' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', position: 'relative', height: 'calc(100vh - 90px - 160px)' }}>
       <Tooltip title="Listar únicamente diferencias" placement="left">
         <Fab
           color="primary"
@@ -178,9 +178,24 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
       ) : (
         <>
           <Box sx={{ display: 'flex', width: '100%', position: 'sticky', zIndex: 1000, boxSizing: 'border-box' }}>
+
+          <Box
+              sx={{
+                width: '20%',
+                backgroundColor: 'grey',
+                padding: '8px',
+                color: 'white',
+                textAlign: 'center',
+                fontWeight: 'bold',
+                boxSizing: 'border-box',
+                margin: 0,
+              }}
+            >
+              <Typography>Personal</Typography>
+            </Box>
             <Box
               sx={{
-                width: '60%',
+                width: '40%',
                 backgroundColor: 'red',
                 padding: '8px',
                 color: 'white',
@@ -211,17 +226,12 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
           {/* Contenedor para las tres tablas */}
           <Box
             sx={{
-              display: 'flex',
-              width: '100%',
-              flexGrow: 1,
-              flexDirection: 'column',
-              boxSizing: 'border-box',
-              overflowX: 'hidden',
+              display: 'flex', width: '100%', flexGrow: 1
             }}
           >
             <Box sx={{ display: 'flex', width: '100%', flexGrow: 1 }}>
               {/* Tabla Pinned */}
-              <Box ref={pinnedGridRef} sx={{ width: '20%', boxSizing: 'border-box' }}>
+              <Box ref={pinnedGridRef} sx={{ width: '20%', boxSizing: 'border-box', height: calculatedGridHeight, }}>
                 <DataGrid
                   rows={paginatedPinnedAfect}
                   columns={getPinnedColumns(pinnedAfect)}
@@ -230,19 +240,21 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
                   disableSelectionOnClick
                   disableColumnSorting
                   sx={{
-                    height: calculatedGridHeight,
                     '& .MuiDataGrid-columnHeaders': {
-                      position: 'sticky',
-                    },
-                    '& .MuiDataGrid-virtualScroller': {
-                      marginTop: '0 !important',
-                    },
-                    '& .MuiDataGrid-main': {
-                      overflow: 'visible',
-                    },
-                    '& .MuiDataGrid-scrollbar--horizontal': {
-                      display: 'none',
-                    },
+                          position: 'sticky',
+                        },
+                        '& .MuiDataGrid-virtualScroller': {
+                          marginTop: '0 !important',
+                        },
+                        '& .MuiDataGrid-main': {
+                          overflow: 'visible',
+                        },
+                        '& .MuiDataGrid-footerContainer': {
+                          display: 'none'
+                        },
+                        '& .MuiDataGrid-filler': {
+                          display: 'none'
+                        }
                   }}
                 />
 
@@ -251,13 +263,13 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
                   className="scrollbar-container-pinned"
                   sx={{
                     width: '100%',
-                    height: '16px',
-                    backgroundColor: 'green',
+                    height: '12px',
+                    backgroundColor: 'grey',
                     borderRadius: '8px',
                     marginTop: 'auto',
                     overflowX: 'auto',
                     whiteSpace: 'nowrap',
-                    margin:'2px'
+
                   }}
                   onScroll={handlePinnedScroll}
                 >
@@ -278,7 +290,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
               >
                 <Box sx={{ display: 'flex', flexGrow: 1 }}>
                   {/* Tabla 1 */}
-                  <Box ref={grid1Ref} sx={{ width: '50%', boxSizing: 'border-box' }}>
+                  <Box ref={grid1Ref} sx={{ width: '50%', height: calculatedGridHeight }}>
                     <DataGrid
                       rows={paginatedAfectaciones1}
                       columns={getComparisonColumns(afectaciones1, afectaciones2, 'table1', pinnedKeys)}
@@ -287,7 +299,6 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
                       disableSelectionOnClick
                       disableColumnSorting
                       sx={{
-                        height: calculatedGridHeight,
                         '& .MuiDataGrid-columnHeaders': {
                           position: 'sticky',
                         },
@@ -297,12 +308,18 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
                         '& .MuiDataGrid-main': {
                           overflow: 'visible',
                         },
+                        '& .MuiDataGrid-footerContainer': {
+                          display: 'none'
+                        },
+                        '& .MuiDataGrid-filler': {
+                          display: 'none'
+                        }
                       }}
                     />
                   </Box>
 
                   {/* Tabla 2 */}
-                  <Box ref={grid2Ref} sx={{ width: '50%', boxSizing: 'border-box' }}>
+                  <Box ref={grid2Ref} sx={{ width: '50%', height: calculatedGridHeight, }}>
                     <DataGrid
                       rows={paginatedAfectaciones2}
                       columns={getComparisonColumns(afectaciones1, afectaciones2, 'table2', pinnedKeys)}
@@ -311,7 +328,6 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
                       disableSelectionOnClick
                       disableColumnSorting
                       sx={{
-                        height: calculatedGridHeight,
                         '& .MuiDataGrid-columnHeaders': {
                           position: 'sticky',
                         },
@@ -321,6 +337,12 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
                         '& .MuiDataGrid-main': {
                           overflow: 'visible',
                         },
+                        '& .MuiDataGrid-footerContainer': {
+                          display: 'none'
+                        },
+                        '& .MuiDataGrid-filler': {
+                          display: 'none'
+                        }
                       }}
                     />
                   </Box>
@@ -331,13 +353,13 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
                   className="scrollbar-container"
                   sx={{
                     width: '100%',
-                    height: '16px',
+                    height: '12px',
                     backgroundColor: '#5c6bc0',
                     borderRadius: '8px',
                     marginTop: 'auto',
                     overflowX: 'auto',
-                    whiteSpace: 'nowrap',
-                    margin:'2px'
+                    whiteSpace: 'nowrap'
+
                   }}
                   onScroll={handleScroll}
                 >
