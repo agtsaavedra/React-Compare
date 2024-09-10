@@ -7,6 +7,8 @@ import { calculateColumnWidth, calculateTotalWidth, getPinnedColumns, getCompari
 import TooltipFab from './TooltipFab';
 import PaginationComponent from './PaginationComponent';
 import HeaderBoxes from './HeaderBoxes';
+import CustomNoRowsOverlay from './CustomNoRows';
+import { esES } from '@mui/x-data-grid/locales';
 
 
 const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filterText, availableHeight }) => {
@@ -156,6 +158,12 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
                           display: 'none'
                         }
                   }}
+                  components={{
+                    NoRowsOverlay: CustomNoRowsOverlay, // Mostrar mensaje personalizado
+                    NoResultsOverlay: CustomNoRowsOverlay,
+                    
+                  }}
+                  localeText={esES.components.MuiDataGrid.defaultProps.localeText}
                 />
 
                 {/* Scrollbar horizontal para tabla pinned */}
@@ -215,6 +223,12 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
                           display: 'none'
                         }
                       }}
+                      components={{
+                        NoRowsOverlay: CustomNoRowsOverlay, // Mostrar mensaje personalizado
+                        NoResultsOverlay: CustomNoRowsOverlay,
+                      }}
+                      localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+
                     />
                   </Box>
 
@@ -244,6 +258,13 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
                           display: 'none'
                         }
                       }}
+                      components={{
+                        NoRowsOverlay: CustomNoRowsOverlay, 
+                        NoResultsOverlay: CustomNoRowsOverlay,
+                    // Mostrar mensaje personalizado
+                      }}
+                      localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+
                     />
                   </Box>
                 </Box>

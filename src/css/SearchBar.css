@@ -1,36 +1,38 @@
 /* src/components/SearchBar.css */
 .searchbar-box {
-  
-  align-items: center;
-  background-color: #5c6bc0;
   display: flex;
-  height: 90px;
-  justify-content: center;
-  position: relative; /* Cambiado desde absolute */
+  justify-content: flex-start; /* Para evitar que los elementos se distribuyan demasiado */
+  align-items: center;
+  background-color: #5c6bc0; /* Color de fondo */
+  height: 90px; /* Mantener altura del componente */
+  padding: 10px 20px; /* Añadir padding interno */
   width: 100%;
-  z-index: 10;
-  
-  top: 0;
+  gap: 20px; /* Aumentar espacio entre los autocompletes y el botón */
+  box-sizing: border-box;
 }
 
+.searchbar-input {
+  background-color: #fff;
+  border: none;
+  border-radius: 4px;
+  width: 100%; /* Ocupar el máximo ancho disponible */
+  min-width: 250px; /* Evitar que los autocompletes se encojan demasiado */
+}
 
-  
-  .searchbar-input {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-shadow: inset 1px 1px rgba(0, 0, 0, .075);
-    color: #555;
-    font-size: 14px;
-    height: 34px;
-    padding: 6px 12px;
-    width: 45%;
-    box-sizing: border-box;
-    margin-right: 0px; /* Espacio entre input y botón */
-  }
-  
-  .searchbar-box-btn {
-    height: 36px;
-    margin-left: 10px;
-  }
-  
+.autocomplete-wrapper {
+  flex-grow: 1; /* Los autocompletes se expandirán para ocupar todo el espacio disponible */
+}
+
+.searchbar-box-btn {
+  height: 56px; /* Mantener altura del botón */
+  min-width: 150px; /* Asegurarse de que el botón tenga un tamaño adecuado */
+  background-color: #3f51b5; /* Botón con el color de Material UI */
+  color: #fff; /* Color del texto del botón */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.searchbar-box-btn:hover {
+  background-color: #303f9f; /* Color de hover típico de Material UI */
+}

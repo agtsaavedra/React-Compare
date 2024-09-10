@@ -50,11 +50,6 @@ code {
 
 
 
-.searchbar-box {
-  position: sticky;
-  top: 0;
-  z-index: 1000; /* Make sure it's above the grid */
-}
 .scrollbar-container {
   padding: 1px;
   background-color: #5c6bc0;

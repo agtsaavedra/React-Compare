@@ -1,53 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AfectacionesDataGrid from './components/AfectacionesDataGrid';
 import SearchBar from './components/SearchBar';
 import useFetchData from './hooks/useFetchData';
 import Loader from './components/Loader';
-import { useRef } from 'react';
-import { useEffect } from 'react';
 import { afectacionesLocal, afectacionesLocal2, pinnedafect } from './var.js';
 
 const App = () => {
-  const [filterText, setFilterText] = useState('');
-  const searchBarRef = useRef(null);  // Referencia para la SearchBar
-  const [availableHeight, setAvailableHeight] = useState(window.innerHeight);  
-  // Supongamos que estos son los endpoints que vas a utilizar para obtener los datos
-  const url1 = 'https://services-dev.ufasta.edu.ar/a/perso/snap/compare/1/2';
-  const url2 = 'https://services-dev.ufasta.edu.ar/a/perso/snap/compare/2/1';
-  const url3 = 'https://services-dev.ufasta.edu.ar/a/perso/snap/compare/pinned/1/2';
+  const [snap1, setSnap1] = useState(null);
+  const [snap2, setSnap2] = useState(null);
+  const [availableHeight, setAvailableHeight] = useState(window.innerHeight);
 
-  // Utiliza el hook personalizado para obtener los datos y el estado de carga
+  // Definimos URLs dinámicas solo cuando snap1 y snap2 están definidos
+  const [url1, setUrl1] = useState(null);
+  const [url2, setUrl2] = useState(null);
+  const [url3, setUrl3] = useState(null);
+
   const { data: afectaciones1, loading: loading1, error: error1 } = useFetchData(url1);
   const { data: afectaciones2, loading: loading2, error: error2 } = useFetchData(url2);
   const { data: pinnedAfectacion, loading: loading3, error: error3 } = useFetchData(url3);
-  // Determina si se está cargando cualquiera de las dos solicitudes
-  const isLoading = loading1 || loading2 || loading3;
 
-  // Si hay error o los datos son nulos o indefinidos, usar datos locales
+  useEffect(() => {
+    if (snap1 && snap2) {
+      // Actualizamos las URLs solo cuando snap1 y snap2 están definidos
+      setUrl1(`https://services-dev.ufasta.edu.ar/a/perso/snap/compare/${snap1}/${snap2}`);
+      setUrl2(`https://services-dev.ufasta.edu.ar/a/perso/snap/compare/${snap2}/${snap1}`);
+      setUrl3(`https://services-dev.ufasta.edu.ar/a/perso/snap/compare/pinned/${snap1}/${snap2}`);
+    }
+  }, [snap1, snap2]);
+
+  const isLoading = loading1 || loading2 || loading3;
+  
   const finalAfectaciones1 = afectaciones1 && afectaciones1.length > 0 ? afectaciones1 : afectacionesLocal;
   const finalAfectaciones2 = afectaciones2 && afectaciones2.length > 0 ? afectaciones2 : afectacionesLocal2;
   const pinnedFinal  = pinnedAfectacion && pinnedAfectacion.length > 0 ? pinnedAfectacion : pinnedafect;
-  // Mostrar el error solo si no hay datos ni del servidor ni locales
-  const hasError = (error1 || error2 || error3 ) && (!finalAfectaciones1.length || !finalAfectaciones2.length);
-  
-  const delayedSearch = (searchTerm) => {
-    setFilterText(searchTerm); // Cambia el estado con el valor del término de búsqueda
+  const hasError = (error1 || error2 || error3) && (!finalAfectaciones1.length || !finalAfectaciones2.length);
+
+  const delayedSearch = (selectedSnap1, selectedSnap2) => {
+    setSnap1(selectedSnap1);
+    setSnap2(selectedSnap2);
+    console.log("Valores seleccionados: ", selectedSnap1, selectedSnap2);
   };
 
   useEffect(() => {
     const handleResize = () => {
-      if (searchBarRef.current) {
-        console.log(searchBarHeight)
-        const searchBarHeight = searchBarRef.current.getBoundingClientRect().height;
-        const availableHeight = window.innerHeight - 169; // Altura disponible entre SearchBar y el scrollbar
-        setAvailableHeight(availableHeight);
-        console.log(availableHeight)
-      }
+      const availableHeight = window.innerHeight - 169;
+      setAvailableHeight(availableHeight);
     };
 
     window.addEventListener('resize', handleResize);
-    handleResize();  // Llamada inicial para calcular la altura
-    return () => window.removeEventListener('resize', handleResize);  // Limpiar evento al desmontar
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return (
@@ -58,13 +60,12 @@ const App = () => {
         <div className="error-message">Error al llamar al servicio</div>
       ) : (
         <>
-          <SearchBar delayedSearch={delayedSearch} onFilterTextChange={setFilterText} />
+          <SearchBar delayedSearch={delayedSearch} />
           <AfectacionesDataGrid
             afectaciones1={finalAfectaciones1}
             afectaciones2={finalAfectaciones2}
             pinnedAfect={pinnedFinal}
-            filterText={filterText}
-            availableHeight={availableHeight}  
+            availableHeight={availableHeight}
           />
         </>
       )}
