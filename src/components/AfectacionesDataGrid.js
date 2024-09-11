@@ -1,31 +1,27 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { Box, Typography, Fab, Tooltip, Pagination } from '@mui/material';
-import { FilterList } from '@mui/icons-material';
-import Loader from './Loader';
-import { calculateColumnWidth, calculateTotalWidth, getPinnedColumns, getComparisonColumns } from '../utils/columnUtils';
+import { Box } from '@mui/material';
+import PartialLoader from './PartialLoader'; // El nuevo loader parcial
+import { calculateTotalWidth, getPinnedColumns, getComparisonColumns } from '../utils/columnUtils';
 import TooltipFab from './TooltipFab';
 import PaginationComponent from './PaginationComponent';
 import HeaderBoxes from './HeaderBoxes';
 import CustomNoRowsOverlay from './CustomNoRows';
 import { esES } from '@mui/x-data-grid/locales';
 
-
-const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filterText, availableHeight }) => {
+const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, availableHeight, loading }) => {
   const grid1Ref = useRef(null);
   const grid2Ref = useRef(null);
   const pinnedGridRef = useRef(null);
-  const pinnedScrollRef = useRef(null);
   const [page, setPage] = useState(1);
   const [showDifferences, setShowDifferences] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const rowHeight = 52;
   const [pageSize, setPageSize] = useState(null);
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 
   // Estado para el ancho del scrollbar
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
-  const [pinnedScrollbarWidth, setPinnedScrollbarWidth] = useState(0); // Para tabla pinned
+  const [pinnedScrollbarWidth, setPinnedScrollbarWidth] = useState(0); // Para la tabla pinned
 
   const calculatedGridHeight = pageSize ? pageSize * rowHeight + 100 : availableHeight;
 
@@ -77,14 +73,11 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
     }
 
     // Calcula el ancho total de las columnas para sincronizar el ancho del scrollbar
-    const totalWidth = calculateTotalWidth(getComparisonColumns(afectaciones1, afectaciones2, 'table1'))  + 900 
-
-    const totalPinnedWidth = calculateTotalWidth(getPinnedColumns(pinnedAfect)); // Para tabla pinned
+    const totalWidth = calculateTotalWidth(getComparisonColumns(afectaciones1, afectaciones2, 'table1')) + 900;
+    const totalPinnedWidth = calculateTotalWidth(getPinnedColumns(pinnedAfect)) + 900; // Para la tabla pinned
 
     setScrollbarWidth(totalWidth);
     setPinnedScrollbarWidth(totalPinnedWidth);
-    
-
   }, [windowHeight, maxRows, page, afectaciones1, afectaciones2, pinnedAfect]);
 
   const paginatedAfectaciones1 = filteredRows1.slice((page - 1) * pageSize, page * pageSize);
@@ -112,28 +105,21 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', position: 'relative', height: 'calc(100vh - 90px - 160px)' }}>
-       <TooltipFab showDifferences={showDifferences} setShowDifferences={setShowDifferences} />
+      <TooltipFab showDifferences={showDifferences} setShowDifferences={setShowDifferences} />
+
+      <Box sx={{ display: 'flex', width: '100%', position: 'sticky', zIndex: 1000, boxSizing: 'border-box' }}>
+        <HeaderBoxes />
+      </Box>
 
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-          <Loader />
-        </Box>
+        <PartialLoader /> // Usamos el loader parcial aquí
       ) : (
         <>
-          <Box sx={{ display: 'flex', width: '100%', position: 'sticky', zIndex: 1000, boxSizing: 'border-box' }}>
-
-          <HeaderBoxes />
-          </Box>
-
-          {/* Contenedor para las tres tablas */}
-          <Box
-            sx={{
-              display: 'flex', width: '100%', flexGrow: 1
-            }}
-          >
+          {/* Contenedor para las tablas */}
+          <Box sx={{ display: 'flex', width: '100%', flexGrow: 1 }}>
             <Box sx={{ display: 'flex', width: '100%', flexGrow: 1 }}>
               {/* Tabla Pinned */}
-              <Box ref={pinnedGridRef} sx={{ width: '20%', boxSizing: 'border-box', height: calculatedGridHeight, }}>
+              <Box ref={pinnedGridRef} sx={{ width: '20%', boxSizing: 'border-box', height: calculatedGridHeight }}>
                 <DataGrid
                   rows={paginatedPinnedAfect}
                   columns={getPinnedColumns(pinnedAfect)}
@@ -142,31 +128,20 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
                   disableSelectionOnClick
                   disableColumnSorting
                   sx={{
-                    '& .MuiDataGrid-columnHeaders': {
-                          position: 'sticky',
-                        },
-                        '& .MuiDataGrid-virtualScroller': {
-                          marginTop: '0 !important',
-                        },
-                        '& .MuiDataGrid-main': {
-                          overflow: 'visible',
-                        },
-                        '& .MuiDataGrid-footerContainer': {
-                          display: 'none'
-                        },
-                        '& .MuiDataGrid-filler': {
-                          display: 'none'
-                        }
+                    '& .MuiDataGrid-columnHeaders': { position: 'sticky' },
+                    '& .MuiDataGrid-virtualScroller': { marginTop: '0 !important' },
+                    '& .MuiDataGrid-main': { overflow: 'visible' },
+                    '& .MuiDataGrid-footerContainer': { display: 'none' },
+                    '& .MuiDataGrid-filler': { display: 'none' },
                   }}
                   components={{
-                    NoRowsOverlay: CustomNoRowsOverlay, // Mostrar mensaje personalizado
+                    NoRowsOverlay: CustomNoRowsOverlay, // Mensaje personalizado cuando no hay filas
                     NoResultsOverlay: CustomNoRowsOverlay,
-                    
                   }}
                   localeText={esES.components.MuiDataGrid.defaultProps.localeText}
                 />
 
-                {/* Scrollbar horizontal para tabla pinned */}
+                {/* Scrollbar horizontal para la tabla pinned */}
                 <Box
                   className="scrollbar-container-pinned"
                   sx={{
@@ -177,7 +152,6 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
                     marginTop: 'auto',
                     overflowX: 'auto',
                     whiteSpace: 'nowrap',
-
                   }}
                   onScroll={handlePinnedScroll}
                 >
@@ -207,33 +181,22 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
                       disableSelectionOnClick
                       disableColumnSorting
                       sx={{
-                        '& .MuiDataGrid-columnHeaders': {
-                          position: 'sticky',
-                        },
-                        '& .MuiDataGrid-virtualScroller': {
-                          marginTop: '0 !important',
-                        },
-                        '& .MuiDataGrid-main': {
-                          overflow: 'visible',
-                        },
-                        '& .MuiDataGrid-footerContainer': {
-                          display: 'none'
-                        },
-                        '& .MuiDataGrid-filler': {
-                          display: 'none'
-                        }
+                        '& .MuiDataGrid-columnHeaders': { position: 'sticky' },
+                        '& .MuiDataGrid-virtualScroller': { marginTop: '0 !important' },
+                        '& .MuiDataGrid-main': { overflow: 'visible' },
+                        '& .MuiDataGrid-footerContainer': { display: 'none' },
+                        '& .MuiDataGrid-filler': { display: 'none' },
                       }}
                       components={{
                         NoRowsOverlay: CustomNoRowsOverlay, // Mostrar mensaje personalizado
                         NoResultsOverlay: CustomNoRowsOverlay,
                       }}
                       localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-
                     />
                   </Box>
 
                   {/* Tabla 2 */}
-                  <Box ref={grid2Ref} sx={{ width: '50%', height: calculatedGridHeight, }}>
+                  <Box ref={grid2Ref} sx={{ width: '50%', height: calculatedGridHeight }}>
                     <DataGrid
                       rows={paginatedAfectaciones2}
                       columns={getComparisonColumns(afectaciones1, afectaciones2, 'table2', pinnedKeys)}
@@ -242,29 +205,17 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
                       disableSelectionOnClick
                       disableColumnSorting
                       sx={{
-                        '& .MuiDataGrid-columnHeaders': {
-                          position: 'sticky',
-                        },
-                        '& .MuiDataGrid-virtualScroller': {
-                          marginTop: '0 !important',
-                        },
-                        '& .MuiDataGrid-main': {
-                          overflow: 'visible',
-                        },
-                        '& .MuiDataGrid-footerContainer': {
-                          display: 'none'
-                        },
-                        '& .MuiDataGrid-filler': {
-                          display: 'none'
-                        }
+                        '& .MuiDataGrid-columnHeaders': { position: 'sticky' },
+                        '& .MuiDataGrid-virtualScroller': { marginTop: '0 !important' },
+                        '& .MuiDataGrid-main': { overflow: 'visible' },
+                        '& .MuiDataGrid-footerContainer': { display: 'none' },
+                        '& .MuiDataGrid-filler': { display: 'none' },
                       }}
                       components={{
-                        NoRowsOverlay: CustomNoRowsOverlay, 
+                        NoRowsOverlay: CustomNoRowsOverlay,
                         NoResultsOverlay: CustomNoRowsOverlay,
-                    // Mostrar mensaje personalizado
                       }}
                       localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-
                     />
                   </Box>
                 </Box>
@@ -279,8 +230,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
                     borderRadius: '8px',
                     marginTop: 'auto',
                     overflowX: 'auto',
-                    whiteSpace: 'nowrap'
-
+                    whiteSpace: 'nowrap',
                   }}
                   onScroll={handleScroll}
                 >
@@ -290,8 +240,8 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, filte
             </Box>
           </Box>
 
-          <Box display="flex" justifyContent="center" marginTop="16px">
-          <PaginationComponent
+          <Box display="flex" justifyContent="center" marginTop="16px" height={30}>
+            <PaginationComponent
               maxRows={maxRows}
               pageSize={pageSize}
               page={page}

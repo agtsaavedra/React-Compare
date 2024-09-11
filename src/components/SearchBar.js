@@ -5,6 +5,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import useFetchData from '../hooks/useFetchData';
 import { snaps as localSnapData } from '../var2';
 import '../css/SearchBar.css'; // Importar los estilos
+import Loader from './Loader';
 
 const SearchBar = ({ delayedSearch }) => {
   const { data, loading, error } = useFetchData('https://services-dev.ufasta.edu.ar/a/perso/afectaciones/snap/selecciona');
@@ -28,7 +29,7 @@ const SearchBar = ({ delayedSearch }) => {
   };
 
   if (loading) {
-    return <CircularProgress />;
+    return <Loader />; // Mostrar el loader de pantalla completa si el fetch está en progreso
   }
 
   return (
@@ -38,6 +39,7 @@ const SearchBar = ({ delayedSearch }) => {
           options={snapData} // Asegurarse de pasar el objeto completo
           getOptionLabel={(option) => option.nombre_snap} // Mostrar el nombre en la lista de opciones
           value={snap1}
+          sx={{ width: 500 }}
           onChange={(event, newValue) => setSnap1(newValue)} // Seleccionar el objeto completo
           renderInput={(params) => (
             <TextField
@@ -48,12 +50,12 @@ const SearchBar = ({ delayedSearch }) => {
             />
           )}
         />
-      </div>
-      <div className="autocomplete-wrapper">
+
         <Autocomplete
           options={snapData} // Asegurarse de pasar el objeto completo
           getOptionLabel={(option) => option.nombre_snap} // Mostrar el nombre en la lista de opciones
           value={snap2}
+          sx={{ width: 500 }}
           onChange={(event, newValue) => setSnap2(newValue)} // Seleccionar el objeto completo
           renderInput={(params) => (
             <TextField
@@ -64,15 +66,17 @@ const SearchBar = ({ delayedSearch }) => {
             />
           )}
         />
+
+        <Button
+          variant="contained"
+          className="searchbar-box-btn"
+          onClick={handleSearch}
+          startIcon={<SearchIcon />}
+        >
+          Buscar
+        </Button>
       </div>
-      <Button
-        variant="contained"
-        className="searchbar-box-btn"
-        onClick={handleSearch}
-        startIcon={<SearchIcon />}
-      >
-        Buscar
-      </Button>
+
     </div>
   );
 };

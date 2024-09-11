@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import AfectacionesDataGrid from './components/AfectacionesDataGrid';
 import SearchBar from './components/SearchBar';
 import useFetchData from './hooks/useFetchData';
-import Loader from './components/Loader';
+import Loader from './components/Loader'; // Loader pantalla completa
 import { afectacionesLocal, afectacionesLocal2, pinnedafect } from './var.js';
 
 const App = () => {
   const [snap1, setSnap1] = useState(null);
   const [snap2, setSnap2] = useState(null);
   const [availableHeight, setAvailableHeight] = useState(window.innerHeight);
+  const [isFetching, setIsFetching] = useState(true); // Para loader de pantalla completa
+  const [loadingPartial, setLoadingPartial] = useState(false); // Para el loader parcial al buscar
 
-  // Definimos URLs dinámicas solo cuando snap1 y snap2 están definidos
   const [url1, setUrl1] = useState(null);
   const [url2, setUrl2] = useState(null);
   const [url3, setUrl3] = useState(null);
@@ -19,27 +20,49 @@ const App = () => {
   const { data: afectaciones2, loading: loading2, error: error2 } = useFetchData(url2);
   const { data: pinnedAfectacion, loading: loading3, error: error3 } = useFetchData(url3);
 
+  // Controla el loader de pantalla completa al cargar los datos iniciales
+  useEffect(() => {
+    if (!loading1 && !loading2 && !loading3) {
+      setIsFetching(false); // Desactiva loader de pantalla completa cuando los datos están listos
+    }
+  }, [loading1, loading2, loading3]);
+
+  // Al iniciar una búsqueda, activa el estado de carga parcial y restablece en caso de error
+  const delayedSearch = (selectedSnap1, selectedSnap2) => {
+    setSnap1(selectedSnap1);
+    setSnap2(selectedSnap2);
+    setLoadingPartial(true); // Activa el loader parcial al iniciar la búsqueda
+
+    // Restablece el estado del loader parcial después de 3 segundos si la búsqueda falla
+    setTimeout(() => {
+      if (loading1 || loading2 || loading3 || error1 || error2 || error3) {
+        setLoadingPartial(false); // Forzar desactivación del loader si ocurre un error o timeout
+      }
+    }, 3000);
+  };
+
+  // Controla las URLs dinámicas basadas en los snaps seleccionados
   useEffect(() => {
     if (snap1 && snap2) {
-      // Actualizamos las URLs solo cuando snap1 y snap2 están definidos
       setUrl1(`https://services-dev.ufasta.edu.ar/a/perso/snap/compare/${snap1}/${snap2}`);
       setUrl2(`https://services-dev.ufasta.edu.ar/a/perso/snap/compare/${snap2}/${snap1}`);
       setUrl3(`https://services-dev.ufasta.edu.ar/a/perso/snap/compare/pinned/${snap1}/${snap2}`);
     }
   }, [snap1, snap2]);
 
-  const isLoading = loading1 || loading2 || loading3;
-  
+  // Maneja el estado del loader parcial basado en el estado del fetch
+  useEffect(() => {
+    if ((!loading1 && !loading2 && !loading3) || error1 || error2 || error3) {
+      setLoadingPartial(false); // Desactiva el loader parcial cuando los datos (locales o remotos) estén listos o si hay error
+    }
+  }, [loading1, loading2, loading3, error1, error2, error3]);
+
+  // Maneja los datos locales en caso de error o si no hay datos remotos
   const finalAfectaciones1 = afectaciones1 && afectaciones1.length > 0 ? afectaciones1 : afectacionesLocal;
   const finalAfectaciones2 = afectaciones2 && afectaciones2.length > 0 ? afectaciones2 : afectacionesLocal2;
-  const pinnedFinal  = pinnedAfectacion && pinnedAfectacion.length > 0 ? pinnedAfectacion : pinnedafect;
-  const hasError = (error1 || error2 || error3) && (!finalAfectaciones1.length || !finalAfectaciones2.length);
+  const pinnedFinal = pinnedAfectacion && pinnedAfectacion.length > 0 ? pinnedAfectacion : pinnedafect;
 
-  const delayedSearch = (selectedSnap1, selectedSnap2) => {
-    setSnap1(selectedSnap1);
-    setSnap2(selectedSnap2);
-    console.log("Valores seleccionados: ", selectedSnap1, selectedSnap2);
-  };
+  const hasError = (error1 || error2 || error3) && (!finalAfectaciones1.length || !finalAfectaciones2.length);
 
   useEffect(() => {
     const handleResize = () => {
@@ -54,10 +77,10 @@ const App = () => {
 
   return (
     <div className="App">
-      {isLoading ? (
-        <Loader />
+      {isFetching ? (
+        <Loader />  // Loader pantalla completa al ingresar
       ) : hasError ? (
-        <div className="error-message">Error al llamar al servicio</div>
+        <div className="error-message">Error al llamar al servicio. Mostrando datos locales...</div>
       ) : (
         <>
           <SearchBar delayedSearch={delayedSearch} />
@@ -66,6 +89,7 @@ const App = () => {
             afectaciones2={finalAfectaciones2}
             pinnedAfect={pinnedFinal}
             availableHeight={availableHeight}
+            loading={loadingPartial} // Controla el loader parcial
           />
         </>
       )}

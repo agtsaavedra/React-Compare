@@ -3,6 +3,7 @@ import { CircularProgress, Box } from '@mui/material';
 
 const Loader = () => {
   return (
+    
     <Box
       sx={{
         display: 'flex',
@@ -11,8 +12,11 @@ const Loader = () => {
         height: '100vh',
       }}
     >
-      <CircularProgress />
+     
+      <CircularProgress content='Cargando' />
+      
     </Box>
+    
   );
 };
 

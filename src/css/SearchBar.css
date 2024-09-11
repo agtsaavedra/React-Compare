@@ -1,7 +1,7 @@
 /* src/components/SearchBar.css */
 .searchbar-box {
   display: flex;
-  justify-content: flex-start; /* Para evitar que los elementos se distribuyan demasiado */
+  justify-content: center; /* Para evitar que los elementos se distribuyan demasiado */
   align-items: center;
   background-color: #5c6bc0; /* Color de fondo */
   height: 90px; /* Mantener altura del componente */
@@ -20,7 +20,11 @@
 }
 
 .autocomplete-wrapper {
-  flex-grow: 1; /* Los autocompletes se expandirán para ocupar todo el espacio disponible */
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content:center;
+  gap: 10px;
 }
 
 .searchbar-box-btn {
