@@ -1,14 +1,20 @@
 import React from 'react';
 import { Fab, Tooltip } from '@mui/material';
-import { FilterList } from '@mui/icons-material';
+import { Add, FilterList } from '@mui/icons-material';
 
-const TooltipFab = ({ showDifferences, setShowDifferences }) => {
+const TooltipFab = () => {
+  const handleFabClick = () => {
+    // Abrir enlace en una nueva pestaña
+    window.open('https://apps-dev.ufasta.edu.ar/personal/legajos/#/tabs/cargos-afectaciones', '_blank');
+  };
+
+
   return (
-    <Tooltip title="Listar únicamente diferencias" placement="left">
+    <Tooltip title="Ir a cargos y afectaciones" placement="left">
       <Fab
         color="primary"
         aria-label="filter"
-        onClick={() => setShowDifferences(!showDifferences)}
+        onClick={handleFabClick}
         sx={{
           position: 'fixed',
           bottom: 16,
@@ -16,10 +22,11 @@ const TooltipFab = ({ showDifferences, setShowDifferences }) => {
           zIndex: 20,
         }}
       >
-        <FilterList />
+        <Add />
       </Fab>
     </Tooltip>
   );
 };
 
 export default TooltipFab;
+

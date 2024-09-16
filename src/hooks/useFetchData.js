@@ -2,11 +2,15 @@ import { useState, useEffect } from 'react';
 
 const useFetchData = (url) => {
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // Nuevo estado para manejar errores
+  const [loading, setLoading] = useState(false); // Cambiar el estado inicial de loading a `false`
+  const [error, setError] = useState(null); // Estado para manejar errores
 
   useEffect(() => {
+    if (!url) return; // Si la URL es null, no hacemos el fetch
+
     const fetchData = async () => {
+      setLoading(true); // Solo activamos el loading cuando hay una URL válida
+
       try {
         const response = await fetch(url);
         if (!response.ok) {
@@ -17,7 +21,7 @@ const useFetchData = (url) => {
       } catch (err) {
         setError(err.message); // Establecer mensaje de error
       } finally {
-        setLoading(false);
+        setLoading(false); // Desactivar loading cuando se complete la llamada
       }
     };
 

@@ -9,12 +9,11 @@ import HeaderBoxes from './HeaderBoxes';
 import CustomNoRowsOverlay from './CustomNoRows';
 import { esES } from '@mui/x-data-grid/locales';
 
-const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, availableHeight, loading }) => {
+const AfectacionesDataGrid = ({ afectaciones1 = [], afectaciones2 = [], pinnedAfect = [], availableHeight, loading }) => {
   const grid1Ref = useRef(null);
   const grid2Ref = useRef(null);
   const pinnedGridRef = useRef(null);
   const [page, setPage] = useState(1);
-  const [showDifferences, setShowDifferences] = useState(false);
   const rowHeight = 52;
   const [pageSize, setPageSize] = useState(null);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -29,28 +28,17 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, avail
     setPage(newPage);
   };
 
-  const getRowsWithIds = (afectaciones) =>
+  const getRowsWithIds = (afectaciones = []) =>
     afectaciones.map((afectacion, index) => ({
       id: index + 1,
       ...afectacion,
     }));
 
-  const filterDifferences = (rows, otherRows) => {
-    return rows.filter((row, index) => {
-      const keys = Object.keys(row);
-      return keys.some((key) => row[key] !== otherRows[index]?.[key]);
-    });
-  };
-
   const allRows1 = getRowsWithIds(afectaciones1);
   const allRows2 = getRowsWithIds(afectaciones2);
   const allPinnedRows = getRowsWithIds(pinnedAfect);
 
-  const filteredRows1 = showDifferences ? filterDifferences(allRows1, allRows2) : allRows1;
-  const filteredRows2 = showDifferences ? filterDifferences(allRows2, allRows1) : allRows2;
-  const filteredPinnedRows = showDifferences ? filterDifferences(allPinnedRows, allPinnedRows) : allPinnedRows;
-
-  const maxRows = Math.max(filteredRows1.length, filteredRows2.length);
+  const maxRows = Math.max(allRows1.length, allRows2.length);
 
   useEffect(() => {
     const handleResize = () => {
@@ -80,9 +68,9 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, avail
     setPinnedScrollbarWidth(totalPinnedWidth);
   }, [windowHeight, maxRows, page, afectaciones1, afectaciones2, pinnedAfect]);
 
-  const paginatedAfectaciones1 = filteredRows1.slice((page - 1) * pageSize, page * pageSize);
-  const paginatedAfectaciones2 = filteredRows2.slice((page - 1) * pageSize, page * pageSize);
-  const paginatedPinnedAfect = filteredPinnedRows.slice((page - 1) * pageSize, page * pageSize);
+  const paginatedAfectaciones1 = allRows1.slice((page - 1) * pageSize, page * pageSize);
+  const paginatedAfectaciones2 = allRows2.slice((page - 1) * pageSize, page * pageSize);
+  const paginatedPinnedAfect = allPinnedRows.slice((page - 1) * pageSize, page * pageSize);
 
   const syncScroll = (scrollLeft) => {
     if (grid1Ref.current && grid2Ref.current) {
@@ -101,11 +89,18 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, avail
     }
   };
 
+  const handleRowClick = (params) => {
+    const legajo = params.row.Legajo; // Obtén el valor del Legajo de la fila
+    const url = `https://apps-dev.ufasta.edu.ar/personal/legajos/#/tabs/cargos-afectaciones?Legajo=${legajo}`;
+    window.open(url, '_blank'); // Abre el enlace en una nueva pestaña
+  };
+
   const pinnedKeys = Object.keys(pinnedAfect[0] || {});
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', position: 'relative', height: 'calc(100vh - 90px - 160px)' }}>
-      <TooltipFab showDifferences={showDifferences} setShowDifferences={setShowDifferences} />
+      {/* TooltipFab actualizado sin la funcionalidad de diferencias */}
+      <TooltipFab />
 
       <Box sx={{ display: 'flex', width: '100%', position: 'sticky', zIndex: 1000, boxSizing: 'border-box' }}>
         <HeaderBoxes />
@@ -113,7 +108,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, avail
 
       {loading ? (
         <PartialLoader /> // Usamos el loader parcial aquí
-      ) : (
+      ) : afectaciones1.length > 0 ? (
         <>
           {/* Contenedor para las tablas */}
           <Box sx={{ display: 'flex', width: '100%', flexGrow: 1 }}>
@@ -139,6 +134,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, avail
                     NoResultsOverlay: CustomNoRowsOverlay,
                   }}
                   localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+                  onRowClick={handleRowClick} // Maneja el clic en la fila para redirigir a la URL con Legajo
                 />
 
                 {/* Scrollbar horizontal para la tabla pinned */}
@@ -192,6 +188,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, avail
                         NoResultsOverlay: CustomNoRowsOverlay,
                       }}
                       localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+                      onRowClick={handleRowClick} // Maneja el clic en la fila para redirigir a la URL con Legajo
                     />
                   </Box>
 
@@ -216,6 +213,7 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, avail
                         NoResultsOverlay: CustomNoRowsOverlay,
                       }}
                       localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+                      onRowClick={handleRowClick} // Maneja el clic en la fila para redirigir a la URL con Legajo
                     />
                   </Box>
                 </Box>
@@ -249,6 +247,10 @@ const AfectacionesDataGrid = ({ afectaciones1, afectaciones2, pinnedAfect, avail
             />
           </Box>
         </>
+      ) : (
+        <div style={{ justifyContent: 'center', alignContent: 'center', display: 'flex', alignItems: 'center' }}>
+          No hay datos disponibles
+        </div>
       )}
     </Box>
   );

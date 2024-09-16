@@ -3,7 +3,7 @@ import AfectacionesDataGrid from './components/AfectacionesDataGrid';
 import SearchBar from './components/SearchBar';
 import useFetchData from './hooks/useFetchData';
 import Loader from './components/Loader'; // Loader pantalla completa
-import { afectacionesLocal, afectacionesLocal2, pinnedafect } from './var.js';
+import PartialLoader from './components/PartialLoader';
 
 const App = () => {
   const [snap1, setSnap1] = useState(null);
@@ -27,42 +27,25 @@ const App = () => {
     }
   }, [loading1, loading2, loading3]);
 
-  // Al iniciar una búsqueda, activa el estado de carga parcial y restablece en caso de error
+  // Al iniciar una búsqueda, activa el estado de carga parcial y actualiza las URLs
   const delayedSearch = (selectedSnap1, selectedSnap2) => {
     setSnap1(selectedSnap1);
     setSnap2(selectedSnap2);
     setLoadingPartial(true); // Activa el loader parcial al iniciar la búsqueda
 
-    // Restablece el estado del loader parcial después de 3 segundos si la búsqueda falla
-    setTimeout(() => {
-      if (loading1 || loading2 || loading3 || error1 || error2 || error3) {
-        setLoadingPartial(false); // Forzar desactivación del loader si ocurre un error o timeout
-      }
-    }, 3000);
+    setUrl1(`https://services-dev.ufasta.edu.ar/a/perso/snap/compare/${selectedSnap1}/${selectedSnap2}`);
+    setUrl2(`https://services-dev.ufasta.edu.ar/a/perso/snap/compare/${selectedSnap2}/${selectedSnap1}`);
+    setUrl3(`https://services-dev.ufasta.edu.ar/a/perso/snap/compare/pinned/${selectedSnap1}/${selectedSnap2}`);
   };
-
-  // Controla las URLs dinámicas basadas en los snaps seleccionados
-  useEffect(() => {
-    if (snap1 && snap2) {
-      setUrl1(`https://services-dev.ufasta.edu.ar/a/perso/snap/compare/${snap1}/${snap2}`);
-      setUrl2(`https://services-dev.ufasta.edu.ar/a/perso/snap/compare/${snap2}/${snap1}`);
-      setUrl3(`https://services-dev.ufasta.edu.ar/a/perso/snap/compare/pinned/${snap1}/${snap2}`);
-    }
-  }, [snap1, snap2]);
 
   // Maneja el estado del loader parcial basado en el estado del fetch
   useEffect(() => {
-    if ((!loading1 && !loading2 && !loading3) || error1 || error2 || error3) {
-      setLoadingPartial(false); // Desactiva el loader parcial cuando los datos (locales o remotos) estén listos o si hay error
+    if (!loading1 && !loading2 && !loading3 && !error1 && !error2 && !error3) {
+      setLoadingPartial(false); // Desactiva el loader parcial cuando los datos estén listos y no hay error
+    } else if (error1 || error2 || error3) {
+      setLoadingPartial(false); // Desactiva el loader parcial si ocurre un error
     }
   }, [loading1, loading2, loading3, error1, error2, error3]);
-
-  // Maneja los datos locales en caso de error o si no hay datos remotos
-  const finalAfectaciones1 = afectaciones1 && afectaciones1.length > 0 ? afectaciones1 : afectacionesLocal;
-  const finalAfectaciones2 = afectaciones2 && afectaciones2.length > 0 ? afectaciones2 : afectacionesLocal2;
-  const pinnedFinal = pinnedAfectacion && pinnedAfectacion.length > 0 ? pinnedAfectacion : pinnedafect;
-
-  const hasError = (error1 || error2 || error3) && (!finalAfectaciones1.length || !finalAfectaciones2.length);
 
   useEffect(() => {
     const handleResize = () => {
@@ -79,18 +62,26 @@ const App = () => {
     <div className="App">
       {isFetching ? (
         <Loader />  // Loader pantalla completa al ingresar
-      ) : hasError ? (
-        <div className="error-message">Error al llamar al servicio. Mostrando datos locales...</div>
       ) : (
         <>
           <SearchBar delayedSearch={delayedSearch} />
-          <AfectacionesDataGrid
-            afectaciones1={finalAfectaciones1}
-            afectaciones2={finalAfectaciones2}
-            pinnedAfect={pinnedFinal}
-            availableHeight={availableHeight}
-            loading={loadingPartial} // Controla el loader parcial
-          />
+          {loadingPartial ? (
+            <PartialLoader /> // Mostrar el loader parcial mientras los datos se están buscando
+          ) : (
+            (afectaciones1?.length > 0 || afectaciones2?.length > 0 || pinnedAfectacion?.length > 0) ? (  // Mostrar el DataGrid si al menos uno tiene datos
+              <AfectacionesDataGrid
+                afectaciones1={afectaciones1 || []}
+                afectaciones2={afectaciones2 || []}
+                pinnedAfect={pinnedAfectacion || []}
+                availableHeight={availableHeight}
+                loading={loadingPartial} // Controla el loader parcial
+              />
+            ) : (
+              <div style={{ justifyContent: "center", alignContent: "center", display: "flex", alignItems: "center", padding: 10, fontSize: 20 }}>
+                No hay datos disponibles para mostrar. Por favor seleccionar planta para hacer la comparación.
+              </div>
+            )
+          )}
         </>
       )}
     </div>
