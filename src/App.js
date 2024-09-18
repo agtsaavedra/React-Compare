@@ -70,7 +70,7 @@ const App = () => {
     if (manualSearch) {
       setLoadingPartial(true);
       setIsFetching(false); // Desactivar el loader completo para las búsquedas manuales
-      window.history.pushState({}, '', '/personal/comp-afectaciones'); // Reiniciar la URL
+      window.history.pushState({}, '', `/personal/comp-afectaciones/${selectedSnap1}/${selectedSnap2}`); // Reiniciar la URL
     } else {
       setIsFetching(true); // Para la búsqueda inicial con parámetros URL
     }
