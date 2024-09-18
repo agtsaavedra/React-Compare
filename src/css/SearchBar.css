@@ -4,7 +4,7 @@
   justify-content: center; /* Para evitar que los elementos se distribuyan demasiado */
   align-items: center;
   background-color: #5c6bc0; /* Color de fondo */
-  height: 90px; /* Mantener altura del componente */
+  height: 70px; /* Mantener altura del componente */
   padding: 10px 20px; /* Añadir padding interno */
   width: 100%;
   gap: 20px; /* Aumentar espacio entre los autocompletes y el botón */
@@ -15,6 +15,7 @@
   background-color: #fff;
   border: none;
   border-radius: 4px;
+  height: 35px;
   width: 100%; /* Ocupar el máximo ancho disponible */
   min-width: 250px; /* Evitar que los autocompletes se encojan demasiado */
 }
@@ -28,7 +29,7 @@
 }
 
 .searchbar-box-btn {
-  height: 56px; /* Mantener altura del botón */
+  height: 35x; /* Mantener altura del botón */
   min-width: 150px; /* Asegurarse de que el botón tenga un tamaño adecuado */
   background-color: #3f51b5; /* Botón con el color de Material UI */
   color: #fff; /* Color del texto del botón */

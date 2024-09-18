@@ -14,7 +14,7 @@ const AfectacionesDataGrid = ({ afectaciones1 = [], afectaciones2 = [], pinnedAf
   const grid2Ref = useRef(null);
   const pinnedGridRef = useRef(null);
   const [page, setPage] = useState(1);
-  const rowHeight = 52;
+  const rowHeight = 45; // Establece la altura de la fila en 40px
   const [pageSize, setPageSize] = useState(null);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 
@@ -22,7 +22,7 @@ const AfectacionesDataGrid = ({ afectaciones1 = [], afectaciones2 = [], pinnedAf
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
   const [pinnedScrollbarWidth, setPinnedScrollbarWidth] = useState(0); // Para la tabla pinned
 
-  const calculatedGridHeight = pageSize ? pageSize * rowHeight + 100 : availableHeight;
+  const calculatedGridHeight = pageSize ? pageSize * rowHeight + 80 : availableHeight;
 
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
@@ -89,12 +89,6 @@ const AfectacionesDataGrid = ({ afectaciones1 = [], afectaciones2 = [], pinnedAf
     }
   };
 
-  const handleRowClick = (params) => {
-    const legajo = params.row.Legajo; // Obtén el valor del Legajo de la fila
-    const url = `https://apps-dev.ufasta.edu.ar/personal/legajos/#/tabs/cargos-afectaciones?Legajo=${legajo}`;
-    window.open(url, '_blank'); // Abre el enlace en una nueva pestaña
-  };
-
   const pinnedKeys = Object.keys(pinnedAfect[0] || {});
 
   return (
@@ -115,13 +109,16 @@ const AfectacionesDataGrid = ({ afectaciones1 = [], afectaciones2 = [], pinnedAf
             <Box sx={{ display: 'flex', width: '100%', flexGrow: 1 }}>
               {/* Tabla Pinned */}
               <Box ref={pinnedGridRef} sx={{ width: '20%', boxSizing: 'border-box', height: calculatedGridHeight }}>
+                <Box Box sx={{ display: 'flex', flexGrow: 1 , height: calculatedGridHeight}}>
                 <DataGrid
                   rows={paginatedPinnedAfect}
-                  columns={getPinnedColumns(pinnedAfect)}
+                  columns={getPinnedColumns(pinnedAfect)} // Aquí usamos el renderCell en la columna "Nombre"
                   pageSize={pageSize}
                   hideFooterPagination
                   disableSelectionOnClick
+                  autoHeight
                   disableColumnSorting
+                  rowHeight={rowHeight} // Establecer la altura de la fila a 40px
                   sx={{
                     '& .MuiDataGrid-columnHeaders': { position: 'sticky' },
                     '& .MuiDataGrid-virtualScroller': { marginTop: '0 !important' },
@@ -134,9 +131,8 @@ const AfectacionesDataGrid = ({ afectaciones1 = [], afectaciones2 = [], pinnedAf
                     NoResultsOverlay: CustomNoRowsOverlay,
                   }}
                   localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-                  onRowClick={handleRowClick} // Maneja el clic en la fila para redirigir a la URL con Legajo
                 />
-
+                </Box>
                 {/* Scrollbar horizontal para la tabla pinned */}
                 <Box
                   className="scrollbar-container-pinned"
@@ -173,9 +169,11 @@ const AfectacionesDataGrid = ({ afectaciones1 = [], afectaciones2 = [], pinnedAf
                       rows={paginatedAfectaciones1}
                       columns={getComparisonColumns(afectaciones1, afectaciones2, 'table1', pinnedKeys)}
                       pageSize={pageSize}
+                      autoHeight
                       hideFooterPagination
                       disableSelectionOnClick
                       disableColumnSorting
+                      rowHeight={rowHeight} // Establecer la altura de la fila a 40px
                       sx={{
                         '& .MuiDataGrid-columnHeaders': { position: 'sticky' },
                         '& .MuiDataGrid-virtualScroller': { marginTop: '0 !important' },
@@ -188,7 +186,6 @@ const AfectacionesDataGrid = ({ afectaciones1 = [], afectaciones2 = [], pinnedAf
                         NoResultsOverlay: CustomNoRowsOverlay,
                       }}
                       localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-                      onRowClick={handleRowClick} // Maneja el clic en la fila para redirigir a la URL con Legajo
                     />
                   </Box>
 
@@ -201,6 +198,8 @@ const AfectacionesDataGrid = ({ afectaciones1 = [], afectaciones2 = [], pinnedAf
                       hideFooterPagination
                       disableSelectionOnClick
                       disableColumnSorting
+                      autoHeight
+                      rowHeight={rowHeight} // Establecer la altura de la fila a 40px
                       sx={{
                         '& .MuiDataGrid-columnHeaders': { position: 'sticky' },
                         '& .MuiDataGrid-virtualScroller': { marginTop: '0 !important' },
@@ -213,7 +212,6 @@ const AfectacionesDataGrid = ({ afectaciones1 = [], afectaciones2 = [], pinnedAf
                         NoResultsOverlay: CustomNoRowsOverlay,
                       }}
                       localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-                      onRowClick={handleRowClick} // Maneja el clic en la fila para redirigir a la URL con Legajo
                     />
                   </Box>
                 </Box>

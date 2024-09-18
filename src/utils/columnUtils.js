@@ -7,15 +7,31 @@ export const calculateColumnWidth = (field, rows, headerText) => {
   export const calculateTotalWidth = (columns) => {
     return columns.reduce((totalWidth, col) => totalWidth + col.width, 0);
   };
+
+  
   
   export const getPinnedColumns = (pinnedAfect) => {
     const pinnedColumnOrder = ['Legajo', 'nombre', 'EnSnap', 'funcion', 'CategoriaLiquidacion', 'idAfectacionAcademica', 'idAfectacionPresupuestaria'];
+    
     return pinnedColumnOrder.map((key) => ({
       field: key,
       headerName: key.replace(/_/g, ' ').toUpperCase(),
       width: calculateColumnWidth(key, pinnedAfect, key.replace(/_/g, ' ').toUpperCase()),
       headerClassName: 'header-cell',
       cellClassName: (params) => '',
+  
+      // Agregar el renderCell solo para la columna "nombre"
+      renderCell: key === 'nombre' ? (params) => (
+        <a
+          href={`https://apps-dev.ufasta.edu.ar/personal/legajos/#/tabs/cargos-afectaciones?Legajo=${params.row.Legajo}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
+          title="Clic para ver más detalles" // Tooltip al pasar el ratón
+        >
+          {params.value}
+        </a>
+      ) : undefined, // Para las demás columnas no hacemos renderCell personalizado
     }));
   };
   
