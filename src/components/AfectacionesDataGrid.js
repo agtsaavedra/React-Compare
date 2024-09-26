@@ -14,13 +14,17 @@ const AfectacionesDataGrid = ({ afectaciones1 = [], afectaciones2 = [], pinnedAf
   const grid2Ref = useRef(null);
   const pinnedGridRef = useRef(null);
   const [page, setPage] = useState(1);
-  const rowHeight = 45;
+  const rowHeight = 40;
   const [pageSize, setPageSize] = useState(null);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [filteredIds, setFilteredIds] = useState([]);
   const [rowsCount, setRowsCount] = useState(0);
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
   const [pinnedScrollbarWidth, setPinnedScrollbarWidth] = useState(0);
+
+  const [filteredRows1, setFilteredRows1] = useState([]);
+  const [filteredRows2, setFilteredRows2] = useState([]);
+  const [filteredPinnedRows, setFilteredPinnedRows] = useState([]);
 
   const apiRefPinned = useGridApiRef();
   const apiRefGrid1 = useGridApiRef();
@@ -118,7 +122,7 @@ const AfectacionesDataGrid = ({ afectaciones1 = [], afectaciones2 = [], pinnedAf
                   autoHeight
                   disableColumnSorting
                   rowHeight={rowHeight}
-                  onFilterModelChange={(model) => handleFilterModelChange(model, apiRefPinned, setFilteredIds, pageSize, setPage, setRowsCount, page)}
+                  onFilterModelChange={(model) => handleFilterModelChange(model, apiRefPinned, setFilteredIds, pageSize, setPage, setRowsCount, page, allRows1, setFilteredPinnedRows)}
                   sx={{
                     '& .MuiDataGrid-columnHeaders': { position: 'sticky' },
                     '& .MuiDataGrid-virtualScroller': { marginTop: '0 !important' },
@@ -172,7 +176,7 @@ const AfectacionesDataGrid = ({ afectaciones1 = [], afectaciones2 = [], pinnedAf
                       disableColumnSorting
                       rowHeight={rowHeight}
                       apiRef={apiRefGrid1}
-                      onFilterModelChange={(model) => handleFilterModelChange(model, apiRefGrid1 , setFilteredIds, pageSize, setPage, setRowsCount, page)}
+                      onFilterModelChange={(model) => handleFilterModelChange(model, apiRefGrid1, setFilteredIds, pageSize, setPage, setRowsCount, page, allRows1, setFilteredRows1)}
                       sx={{
                         '& .MuiDataGrid-columnHeaders': { position: 'sticky' },
                         '& .MuiDataGrid-virtualScroller': { marginTop: '0 !important' },
@@ -199,7 +203,7 @@ const AfectacionesDataGrid = ({ afectaciones1 = [], afectaciones2 = [], pinnedAf
                       autoHeight
                       rowHeight={rowHeight}
                       apiRef={apiRefGrid2}
-                      onFilterModelChange={(model) => handleFilterModelChange(model, apiRefGrid2 , setFilteredIds, pageSize, setPage, setRowsCount, page)}
+                      onFilterModelChange={(model) => handleFilterModelChange(model, apiRefGrid2, setFilteredIds, pageSize, setPage, setRowsCount, page, allRows1, setFilteredRows2)}
                       sx={{
                         '& .MuiDataGrid-columnHeaders': { position: 'sticky' },
                         '& .MuiDataGrid-virtualScroller': { marginTop: '0 !important' },

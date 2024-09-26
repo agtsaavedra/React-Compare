@@ -8,8 +8,8 @@ const PartialLoader = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        height: 'calc(100vh - 100px)', // Ajusta la altura para que comience después de los HeaderBoxes
-        marginTop: '160px', // Deja el espacio suficiente para el header y otros elementos superiores
+        height: 'calc(100vh -  70px)', // Ajusta la altura para que comience después de los HeaderBoxes
+         // Deja el espacio suficiente para el header y otros elementos superiores
       }}
     >
       <CircularProgress />

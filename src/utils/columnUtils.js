@@ -16,27 +16,63 @@ export const calculateColumnWidth = (field, rows, headerText) => {
       id: index + 1,
       ...afectacion,
     }));
-
-    export const handleFilterModelChange = (model, apiRef, setFilteredIds, pageSize, setPage, setRowsCount, page) => {
+    export const handleFilterModelChange = (model, apiRef, setFilteredIds, pageSize, setPage, setRowsCount, page, originalRows, setFilteredRows) => {
       setTimeout(() => {
-        const visibleRowIds = gridFilteredSortedRowIdsSelector(apiRef.current.state);
-    
-        if (model.items && model.items.length > 0 && model.items[0].value) {
-          setFilteredIds(visibleRowIds); // Actualizar filteredIds solo si hay un valor en el filtro
-        } else {
-          setFilteredIds([]); // Limpiar filteredIds si no hay filtros activos
-        }
-    
-        // Actualizar la paginación y el conteo de filas inmediatamente después de aplicar los filtros
-        const filteredRowCount = visibleRowIds.length;
-        const maxPages = Math.ceil(filteredRowCount / pageSize);
-        if (page > maxPages) {
-          setPage(1); // Volver a la primera página si el número de filas es menor que la página actual
-        }
-        setRowsCount(filteredRowCount); // Actualizar el conteo de filas con los datos filtrados
+          // Si hay filtros aplicados
+          if (model.items && model.items.length > 0) {
+              // Aplicamos el filtro manualmente sobre el conjunto completo de originalRows
+              const filteredData = originalRows.filter((row) => {
+                  // Para cada fila, verificamos si cumple con todos los filtros del modelo
+                  return model.items.every((filterItem) => {
+                      const { field, value, operator } = filterItem;
+                      
+                      if (!value || !field) return true; // Si no hay valor o campo, no hacemos nada
+                      
+                      const cellValue = row[field]; // Obtener el valor de la celda para la columna que se filtra
+  
+                      // Manejo de operadores dinámicos
+                      switch (operator) {
+                          case 'contains':
+                              return String(cellValue).toLowerCase().includes(String(value).toLowerCase());
+                          case 'equals':
+                              return String(cellValue) === String(value);
+                          case 'startsWith':
+                              return String(cellValue).toLowerCase().startsWith(String(value).toLowerCase());
+                          case 'endsWith':
+                              return String(cellValue).toLowerCase().endsWith(String(value).toLowerCase());
+                          case 'isEmpty':
+                              return !cellValue || String(cellValue).trim() === '';
+                          case 'isNotEmpty':
+                              return cellValue && String(cellValue).trim() !== '';
+                          case 'greaterThan':
+                              return Number(cellValue) > Number(value);
+                          case 'lessThan':
+                              return Number(cellValue) < Number(value);
+                          default:
+                              return true; // Si no hay un operador definido o no lo reconocemos, devolvemos true
+                      }
+                  });
+              });
+  
+              // Actualizamos los datos filtrados y los IDs filtrados
+              setFilteredRows(filteredData); // Guardar el dataset filtrado
+              const filteredIds = filteredData.map((row) => row.id); // Extraer los IDs filtrados
+              setFilteredIds(filteredIds); // Actualizar los IDs filtrados
+              setRowsCount(filteredData.length); // Actualizar el conteo de filas
+  
+              // Ajustar la página si el número de filas es menor al número de filas por página
+              if (page > Math.ceil(filteredData.length / pageSize)) {
+                  setPage(1); // Volver a la primera página si la página actual excede el máximo de páginas
+              }
+          } else {
+              // Si no hay filtros, revertimos a los datos originales
+              setFilteredRows(originalRows);
+              setFilteredIds([]); // Limpiamos los IDs filtrados
+              setRowsCount(originalRows.length); // Actualizamos el número de filas
+          }
       }, 50);
-    };
-
+  };
+  
     export const syncScroll = (scrollLeft, grid1Ref, grid2Ref) => {
       if (grid1Ref.current && grid2Ref.current) {
         grid1Ref.current.querySelector('.MuiDataGrid-virtualScroller').scrollLeft = scrollLeft;
