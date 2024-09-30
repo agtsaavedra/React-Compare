@@ -44,16 +44,32 @@ const AfectacionesDataGrid = ({ afectaciones1 = [], afectaciones2 = [], pinnedAf
 
   // Actualizar el tamaño de página y el número de filas cuando cambie la altura de la ventana o los filtros
   useEffect(() => {
+    // Función para manejar el cambio de tamaño de la ventana
+    const handleResize = () => {
+      setWindowHeight(window.innerHeight);
+    };
+  
+    // Escuchar el evento 'resize' para actualizar el estado de windowHeight
+    window.addEventListener('resize', handleResize);
+  
+    // Calcular el nuevo tamaño de página
     const newPageSize = Math.floor((windowHeight - 250) / rowHeight);
     setPageSize(newPageSize > 0 ? newPageSize : 1);
-
+  
+    // Actualizar el número de filas
     const currentRowsCount = filteredIds.length > 0 ? filteredIds.length : maxRows;
     setRowsCount(currentRowsCount);
-
+  
+    // Calcular el ancho total de las tablas
     const totalWidth = calculateTotalWidth(getComparisonColumns(afectaciones1, afectaciones2, 'table1')) + 900;
     const totalPinnedWidth = calculateTotalWidth(getPinnedColumns(pinnedAfect)) + 900;
     setScrollbarWidth(totalWidth);
     setPinnedScrollbarWidth(totalPinnedWidth);
+  
+    // Limpiar el listener al desmontar el componente
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, [windowHeight, maxRows, afectaciones1, afectaciones2, pinnedAfect, filteredIds]);
 
   // Ajustar la página si los filtros modifican el número de páginas disponibles
